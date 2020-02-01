@@ -1,5 +1,4 @@
-# README
-## Week 2
+# Week 2 of Exercises
 
 
 ## Exercise 1)
