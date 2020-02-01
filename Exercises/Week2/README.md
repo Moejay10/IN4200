@@ -31,6 +31,36 @@ void *memcpy (void * destination, const void * source, size_t num);
 ```
 The `num` argument is the number of bytes to be copied.
 
+Here is an example using memcpy
+```C
+#include <stdio.h>
+#include <string.h>
+
+int main(int argc, const char * argv[])
+
+    /* Create two arrays to hold our data */
+    char original[10];
+    char newcopy[10];
+
+    /* Copy a string into the original array */
+    strcpy(original, "Memcpy");
+
+    /* Copy the first 7 characters of the original
+     array into the newcopy array */
+    memcpy(newcopy, original, 7);
+
+    /* Set the character at position 24 to a null (char 0)
+     in the newcopy array to ensure the string is terminated
+     (This is important since memcpy does not initialize memory
+     and printf expects a null at the end of a string) */
+    newcopy[10] = 0;
+
+    /* Display the contents of the new copy */
+    printf("%s\n", newcopy);
+
+    return 0;
+```
+
 ## Exercise 3)
 When compiling Ex3.c remember to compile it with the "-lm" command.
 If not done so you will get the error message:
