@@ -58,7 +58,7 @@ Since a cache line holds consecutive elements in memory one cache line must be f
 
 The total number of bytes on one cache line is 32 (4 double precision floats). If we divide by the bandwidth we get
 
-$$\frac{32\text{Bytes}}{3.2\text{GBytes/sec}} = 10\text{ns}$$
+$\frac{32$\text{Bytes}$}{3.2$\text{GBytes/sec}$}$ = 10$\text{ns}$
 
 The latency to load one cache line is 100ns. The total for both cache lines is then 220ns. Since the flops in this situation is negligible compared to the memory management the performance is approximately \(8\text{Flops}/220\text{ns} = 36\text{MFlops/sec}\)
 
