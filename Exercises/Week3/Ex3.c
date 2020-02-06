@@ -8,7 +8,7 @@
 
 int main(int argc, char* argv[]){
 
-double result1, result2;
+double result1, result2, diff;
 int N;
 
 // Checking if number of argument is
@@ -45,9 +45,11 @@ result2 = pow(N,100);
 clock_t end2 = clock();
 double tot2 = (double)(end2 - start2)/CLOCKS_PER_SEC;
 
-
-printf("\n Own function time used = %f", tot1);
+diff = fabs(result1 - result2);
+printf("\n The difference between pow and own function %f \n", diff);
+printf("\n Own function time used = %f \n", tot1);
 printf("\n pow function time used = %f \n", tot2);
+
 
 return 0;
 }
