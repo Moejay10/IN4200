@@ -51,16 +51,20 @@ double s = 0.;
 for (i=0; i<N; i++)
     s = s + A[i]*B[i];
 ```
-I'm going to assume a 1GHz (or higher) clock cycle for this exercise.
+Suppose an imaginary 1GHz CPU, which can do one load (or store),
+one multiplication and one addition per clock cycle. We assume that loop counting and branching come at no cost. The memory bus can transfer 3.2GBytes/sec. Assume that the latency to load one cache line from main memory is 100 clock cycles, and that four double precision numbers fit into one cache line.
+
+1 clock cycle is 1*10^9 second = 1 ns.
+100 clock cycle is 1*10^9 second = 100 ns.
 
 ### a)
-Since a cache line holds consecutive elements in memory one cache line must be fetched for each array. At this point there will be data in the cache to complete four multiplications, and four additions, for a total of 8 flops.
+Since a cache line holds consecutive elements in memory (four double precision numbers fit into one cache line), one cache line must be fetched for each array. At this point there will be data in the cache to complete four multiplications, and four additions, for a total of 8 flops.
 
 The total number of bytes on one cache line is 32 (4 double precision floats). If we divide by the bandwidth we get
 
-$\frac{32$\text{Bytes}$}{3.2$\text{GBytes/sec}$}$ = 10$\text{ns}$
+$$\frac{32\text{Bytes}}{3.2\text{GBytes/sec}} = 10\text{ns}$$
 
-The latency to load one cache line is 100ns. The total for both cache lines is then 220ns. Since the flops in this situation is negligible compared to the memory management the performance is approximately \(8\text{Flops}/220\text{ns} = 36\text{MFlops/sec}\)
+The latency to load one cache line is 100 ns. The total for one  cache line is then 110ns, for two it becomes 220 ns. Since the flops in this situation is negligible compared to the memory management the performance is approximately $$\(8\text{Flops}/220\text{ns} = 36\text{MFlops/sec}\)$$
 
 ### b)
 From **a)** we know that the time used to load one cache line is 10ns. Using eq. 1.6 from the textbook we then get
