@@ -29,7 +29,9 @@ Notice that there are two different ways to declare a wildcard. In the `wildcard
 `$(wildcard *.c)` is expanded to a whitespace separated list of all filenames ending in `.c`, and `$(patsubst %.c, %.exe, ...` changes the suffix of all of them.
 
 ## Exercise 1) Division
-To estimate the latency we have to make a few assumptions. **First**: we assume that there is not going to be any latency due to cache misses. The L1 cache of standard laptops is measured in KB. So all the values used in the function is going to fit in the L1 cache. They will also be used over and over, making it unlikely that they get flushed back to main memory. **Second**: the computation inside the loop is dominated by the division. If this is true we can say
+To estimate the latency we have to make a few assumptions.
+**First**: We assume that there is not going to be any latency due to cache misses. The L1 cache of standard laptops is measured in KB. So all the values used in the function is going to fit in the L1 cache. They will also be used over and over, making it unlikely that they get flushed back to main memory. 
+**Second**: The computation inside the loop is dominated by the division. If this is true we can say
 
 \(T = T_{division} + T_{rest} \approx T_{division}\)
 
