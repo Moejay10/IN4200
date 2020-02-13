@@ -10,12 +10,12 @@ PROGRAMS := ex1.exe ex3.exe
 
 all: $(PROGRAMS)
 
-ex1.exe: Ex1.c Functions.c
-	$(CC) $(FLAGS) Ex1.c Functions.c $(LIB) -o ex1.exe
+ex1.exe: Ex1.c
+	$(CC) $(FLAGS) Ex1.c $(LIB) -o ex1.exe
 
 
-ex3.exe: Ex3.c Functions.c
-		$(CC) $(FLAGS)  Ex3.c Functions.c $(LIB) -o ex3.exe
+ex3.exe: Ex3.c
+		$(CC) $(FLAGS)  Ex3.c $(LIB) -o ex3.exe
 
 clean :
 		rm -f *.o $(PROGRAMS)
