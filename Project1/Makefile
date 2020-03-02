@@ -1,6 +1,6 @@
 CC := gcc # Which Compiler to use
 
-LIB := -lm -fopenmp # Which libraries to use (this is the math)
+LIB := -lm -fopenmp # Which libraries to use 
 
 FLAGS := -Wall # Which flags to use
 

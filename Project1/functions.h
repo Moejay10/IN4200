@@ -7,12 +7,22 @@
 #include <omp.h> // OpenMP
 
 
-void read_graph_from_file_1(char *filename, int *Nodes, int *Edges);
+void read_graph_from_file_1(char *filename, int *Nodes, int *Edges, char ***table2D);
+void read_graph_from_file_2(char *filename, int *Nodes, int *Edges, int **row_ptr, int **col_idx, int **val);
+
 void alloc2DMatrix(char ***A, int N);
-void free2D(char **A);
+void allocVector(int **a, int N);
+
 void construct2DMatrix(char **A, int N);
-void WritetoFile(char **A, int N);
-void printToTerminal(char **A, int N);
+
+void free2D(char **A);
+void free1D(int *a);
+
+void WriteMatrixtoFile(char **A, int N);
+void WriteVectortoFile(int *a, int *b, int*c, int N);
+
+void printMatrixToTerminal(char **A, int N);
+void printVectorToTerminal(int *a, int *b, int*c, int N);
 
 
 #endif // FUNCTIONS_H
