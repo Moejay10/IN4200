@@ -18,7 +18,6 @@ void read_graph_from_file_1(char *filename, int *Nodes, int *Edges, char ***tabl
 // * Edges:     Empty parameter
 
 /// -----------------------------------------------------------
-    //char **A;
     int row = 0;
     int col = 0;
 
@@ -37,7 +36,6 @@ void read_graph_from_file_1(char *filename, int *Nodes, int *Edges, char ***tabl
 
     int N = *Nodes;
 
-    //alloc2DMatrix(&A, N);
     alloc2DMatrix(table2D, N);
 
     while (fscanf(datafile, "%i %i", &col, &row) != EOF){ // Scan to end of file
@@ -45,18 +43,14 @@ void read_graph_from_file_1(char *filename, int *Nodes, int *Edges, char ***tabl
         if (row == col){
             continue;                            // Assure we skip self links
         }
-        //A[row][col] = 1;
         (*table2D)[row][col] = 1;
     }
 
-    //WriteMatrixtoFile(A, N);
-    //printMatrixToTerminal(A, N);
-    //free2D(A);
 
     fclose (datafile);
 }
 
-void read_graph_from_file_2(char *filename, int *Nodes, int *Edges, int **row_ptr, int **col_idx, int **val){
+void read_graph_from_file_2(char *filename, int *Nodes, int *Edges, int **row_ptr, int **col_idx){
 /// -----------------------------------------------------------
 // # Read file and extract data
 // Input:
@@ -85,7 +79,6 @@ void read_graph_from_file_2(char *filename, int *Nodes, int *Edges, int **row_pt
     //int N = *Nodes;
     int E = *Edges;
 
-    allocVector(val, E);
     allocVector(col_idx, E);
     allocVector(row_ptr, E);
 
@@ -96,21 +89,13 @@ void read_graph_from_file_2(char *filename, int *Nodes, int *Edges, int **row_pt
             continue;                            // Assure we skip self links
         }
 
-        (*val)[index] = 1;
         (*col_idx)[index] = col;
         (*row_ptr)[index] = row;
 
+        //printf(" %d  %d \n", row, col);
+
         index++;
     }
-
-    //printVectorToTerminal(val, col_idx, row_ptr, E);
-
-    //WriteVectortoFile(val, col_idx, row_ptr, E);
-
-    //free1D(val);
-    //free1D(col_idx);
-    //free1D(row_ptr);
-
 
     fclose (datafile);
 }
@@ -170,15 +155,14 @@ void WriteMatrixtoFile(char **A, int N){
 }
 
 // Print vectors values in a file.
-void WriteVectortoFile(int *a, int *b, int*c, int N){
+void WriteVectortoFile(int **a, int **b, int N){
   FILE *fp;
   fp = fopen("CRS", "w");
-  fprintf(fp, " val  row  col \n");
+  fprintf(fp, " row  col \n");
 
   for (int i = 0; i < N; i++){
-      fprintf(fp, "  %d  ", a[i]);
-      fprintf(fp, "  %d  ", b[i]);
-      fprintf(fp, "  %d  ", c[i]);
+      fprintf(fp, "  %d  ", (*a)[i]);
+      fprintf(fp, "  %d  ", (*b)[i]);
       fprintf(fp, "\n");
   }
   fclose(fp);
@@ -195,12 +179,11 @@ void printMatrixToTerminal(char **A, int N){
 }
 
 // Print vectors values.
-void printVectorToTerminal(int *a, int *b, int*c, int N){
-  printf(" val  row  col \n");
+void printVectorToTerminal(int **a, int **b, int N){
+  printf(" row  col \n");
   for (int i = 0; i < N; i++){
-    printf("  %d  ", a[i]);
-    printf("  %d  ", b[i]);
-    printf("  %d  ", c[i]);
+    printf("  %d  ", (*a)[i]);
+    printf("  %d  ", (*b)[i]);
     printf("\n");
   }
 }
@@ -220,15 +203,15 @@ void sort_numbers_ascending(int **a, int **b, int N){
             (*b)[i] = (*b)[j];
             (*a)[j] = temp1;
             (*b)[j] = temp2;
-          /*
-            if ((*b)[j] > (*b)[i]){
-              temp3 = (*b)[j];
-              (*b)[j] = (*b)[i];
-              (*b)[i] = temp3;
-            }
-          */
+         }
+         while( (*a)[i] == (*a)[j] && (*b)[i] > (*b)[j] ){
+           temp3 = (*b)[i];
+           (*b)[i] = (*b)[j];
+           (*b)[j] = temp3;
          }
       }
    }
+
+
 
 }

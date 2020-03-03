@@ -24,49 +24,46 @@ int main(int argc, char *argv[]){
 
   char **table2D;
 
-  // Set up time for clocking the task
-  start = omp_get_wtime();
+
 
   if (strcmp(filename, "web-NotreDame.txt") == 0 ){
-  printf("File is to big for read_graph_from_file_1 \n");
+    printf("File is to big for read_graph_from_file_1 \n");
   }
 
   else{
-  read_graph_from_file_1(filename, &Nodes, &Edges, &table2D); // Do not use to big of a file
+    // Set up time for clocking the task
+    start = omp_get_wtime();
 
-  end = omp_get_wtime();
-  timer = end - start;
+    read_graph_from_file_1(filename, &Nodes, &Edges, &table2D); // Do not use to big of a file
 
-  printf("Time used for read_graph_from_file_1 is %fs \n", timer);
+    end = omp_get_wtime();
+    timer = end - start;
 
-  //WriteMatrixtoFile(table2D, Nodes);
-  //printMatrixToTerminal(table2D, Nodes);
-  free2D(table2D);
+    printf("Time used for read_graph_from_file_1 is %fs \n", timer);
+
+    //WriteMatrixtoFile(table2D, Nodes);
+    //printMatrixToTerminal(table2D, Nodes);
+    free2D(table2D);
   }
-
-
-
 
 
 
   int *row_ptr;
   int *col_idx;
-  int *val;
 
   start = omp_get_wtime();
-  read_graph_from_file_2(filename, &Nodes, &Edges, &row_ptr, &col_idx, &val);
+  read_graph_from_file_2(filename, &Nodes, &Edges, &row_ptr, &col_idx);
 
   end = omp_get_wtime();
   timer = end - start;
 
   printf("Time used for read_graph_from_file_2 is %fs \n", timer);
 
-  sort_numbers_ascending(&row_ptr, &col_idx, Edges);
+  //sort_numbers_ascending(&row_ptr, &col_idx, Edges);
 
-  printVectorToTerminal(val, row_ptr, col_idx, Edges);
-  WriteVectortoFile(val, row_ptr, col_idx, Edges);
+  printVectorToTerminal(&row_ptr, &col_idx, Edges);
+  WriteVectortoFile(&row_ptr, &col_idx, Edges);
 
-  free1D(val);
   free1D(col_idx);
   free1D(row_ptr);
 

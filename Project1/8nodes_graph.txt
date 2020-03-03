@@ -1,4 +1,4 @@
-# Directed graph (each unordered pair of nodes is saved once): 100nodes_graphs.txt
+# Directed graph (each unordered pair of nodes is saved once): 8nodes_graphs.txt
 # Another example
 # Nodes: 8   Edges: 17
 # FromNodeId    ToNodeId
