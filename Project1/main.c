@@ -61,8 +61,10 @@ int main(int argc, char *argv[]){
 
   printf("Time used for read_graph_from_file_2 is %fs \n", timer);
 
-  //printVectorToTerminal(val, col_idx, row_ptr, Edges);
-  //WriteVectortoFile(val, col_idx, row_ptr, Edges);
+  sort_numbers_ascending(&row_ptr, &col_idx, Edges);
+
+  printVectorToTerminal(val, row_ptr, col_idx, Edges);
+  WriteVectortoFile(val, row_ptr, col_idx, Edges);
 
   free1D(val);
   free1D(col_idx);

@@ -24,5 +24,7 @@ void WriteVectortoFile(int *a, int *b, int*c, int N);
 void printMatrixToTerminal(char **A, int N);
 void printVectorToTerminal(int *a, int *b, int*c, int N);
 
+void sort_numbers_ascending(int **a, int **b, int N);
+
 
 #endif // FUNCTIONS_H

@@ -173,7 +173,7 @@ void WriteMatrixtoFile(char **A, int N){
 void WriteVectortoFile(int *a, int *b, int*c, int N){
   FILE *fp;
   fp = fopen("CRS", "w");
-  fprintf(fp, " val  col  row \n");
+  fprintf(fp, " val  row  col \n");
 
   for (int i = 0; i < N; i++){
       fprintf(fp, "  %d  ", a[i]);
@@ -196,11 +196,39 @@ void printMatrixToTerminal(char **A, int N){
 
 // Print vectors values.
 void printVectorToTerminal(int *a, int *b, int*c, int N){
-  printf(" val  col  row \n");
+  printf(" val  row  col \n");
   for (int i = 0; i < N; i++){
     printf("  %d  ", a[i]);
     printf("  %d  ", b[i]);
     printf("  %d  ", c[i]);
     printf("\n");
   }
+}
+
+
+
+// Function to sort character array b
+// according to the order defined by a
+void sort_numbers_ascending(int **a, int **b, int N){
+   int temp1, temp2, temp3, i, j;
+   for (i = 0; i < N; i++){
+      for (j = i + 1; j < N; j++){
+         if ((*a)[i] > (*a)[j]){
+            temp1 = (*a)[i];
+            temp2 = (*b)[i];
+            (*a)[i] = (*a)[j];
+            (*b)[i] = (*b)[j];
+            (*a)[j] = temp1;
+            (*b)[j] = temp2;
+          /*
+            if ((*b)[j] > (*b)[i]){
+              temp3 = (*b)[j];
+              (*b)[j] = (*b)[i];
+              (*b)[i] = temp3;
+            }
+          */
+         }
+      }
+   }
+
 }
