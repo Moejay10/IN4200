@@ -61,8 +61,8 @@ int main(int argc, char *argv[]){
 
   //sort_numbers_ascending(&row_ptr, &col_idx, Edges);
 
-  printVectorToTerminal(&row_ptr, &col_idx, Edges);
-  WriteVectortoFile(&row_ptr, &col_idx, Edges);
+  printVectorToTerminal(row_ptr, col_idx, Edges);
+  //WriteVectortoFile(row_ptr, col_idx, Edges);
 
   free1D(col_idx);
   free1D(row_ptr);

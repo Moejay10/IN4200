@@ -19,12 +19,12 @@ void free2D(char **A);
 void free1D(int *a);
 
 void WriteMatrixtoFile(char **A, int N);
-void WriteVectortoFile(int **a, int **b, int N);
+void WriteVectortoFile(int *a, int *b, int N);
 
 void printMatrixToTerminal(char **A, int N);
-void printVectorToTerminal(int **a, int **b, int N);
+void printVectorToTerminal(int *a, int *b, int N);
 
-void sort_numbers_ascending(int **a, int **b, int N);
+void sort_numbers_ascending(int *a, int *b, int N);
 
 
 #endif // FUNCTIONS_H

@@ -63,6 +63,7 @@ void read_graph_from_file_2(char *filename, int *Nodes, int *Edges, int **row_pt
     int row = 0;
     int col = 0;
     int index   = 0;
+
     FILE *datafile;
     datafile = fopen(filename, "r");
 
@@ -83,18 +84,22 @@ void read_graph_from_file_2(char *filename, int *Nodes, int *Edges, int **row_pt
     allocVector(row_ptr, E);
 
 
-    while (fscanf(datafile, "%i %i", &col, &row) != EOF){ // Scan to end of file
+    while (index < E && fscanf(datafile, "%i %i", &col, &row) != EOF){ // Scan to end of file
 
-        if (row == col){
+        if (col == row){
             continue;                            // Assure we skip self links
         }
 
-        (*col_idx)[index] = col;
-        (*row_ptr)[index] = row;
+        (*col_idx)[index] = col;                 // Saves coloumn index
+        (*row_ptr)[index] = row;                 // Saves row index
 
-        //printf(" %d  %d \n", row, col);
+        //col_idx[index] = col;                    // Saves coloumn index
+        //row_ptr[index] = row;                    // Saves row index
 
+        //printf(" %d  %d \n", col, (*col_idx)[index]);
+        //printf(" %d  %d \n", row, (*row_ptr)[index]);
         index++;
+
     }
 
     fclose (datafile);
@@ -155,14 +160,14 @@ void WriteMatrixtoFile(char **A, int N){
 }
 
 // Print vectors values in a file.
-void WriteVectortoFile(int **a, int **b, int N){
+void WriteVectortoFile(int *a, int *b, int N){
   FILE *fp;
   fp = fopen("CRS", "w");
   fprintf(fp, " row  col \n");
 
   for (int i = 0; i < N; i++){
-      fprintf(fp, "  %d  ", (*a)[i]);
-      fprintf(fp, "  %d  ", (*b)[i]);
+      fprintf(fp, "  %d  ", a[i]);
+      fprintf(fp, "  %d  ", b[i]);
       fprintf(fp, "\n");
   }
   fclose(fp);
@@ -179,35 +184,34 @@ void printMatrixToTerminal(char **A, int N){
 }
 
 // Print vectors values.
-void printVectorToTerminal(int **a, int **b, int N){
+void printVectorToTerminal(int *a, int *b, int N){
   printf(" row  col \n");
   for (int i = 0; i < N; i++){
-    printf("  %d  ", (*a)[i]);
-    printf("  %d  ", (*b)[i]);
+    printf("  %d  ", a[i]);
+    printf("  %d  ", b[i]);
     printf("\n");
   }
 }
 
 
-
 // Function to sort character array b
 // according to the order defined by a
-void sort_numbers_ascending(int **a, int **b, int N){
+void sort_numbers_ascending(int *a, int *b, int N){
    int temp1, temp2, temp3, i, j;
    for (i = 0; i < N; i++){
       for (j = i + 1; j < N; j++){
-         if ((*a)[i] > (*a)[j]){
-            temp1 = (*a)[i];
-            temp2 = (*b)[i];
-            (*a)[i] = (*a)[j];
-            (*b)[i] = (*b)[j];
-            (*a)[j] = temp1;
-            (*b)[j] = temp2;
+         if (a[i] > a[j]){
+            temp1 = a[i];
+            temp2 = b[i];
+            a[i] = a[j];
+            b[i] = b[j];
+            a[j] = temp1;
+            b[j] = temp2;
          }
-         while( (*a)[i] == (*a)[j] && (*b)[i] > (*b)[j] ){
-           temp3 = (*b)[i];
-           (*b)[i] = (*b)[j];
-           (*b)[j] = temp3;
+         while( a[i] == a[j] && b[i] > b[j] ){
+           temp3 = b[i];
+           b[i] = b[j];
+           b[j] = temp3;
          }
       }
    }
