@@ -7,8 +7,8 @@
 #include <omp.h> // OpenMP
 
 
-void read_graph_from_file_1(char *filename, int *Nodes, int *Edges, char ***table2D);
-void read_graph_from_file_2(char *filename, int *Nodes, int *Edges, int **row_ptr, int **col_idx);
+void read_graph_from_file_1(char *filename, int *Nodes, char ***table2D);
+void read_graph_from_file_2(char *filename, int *Nodes, int *N_links, int **row_ptr, int **col_idx);
 
 void alloc2DMatrix(char ***A, int N);
 void allocVector(int **a, int N);

@@ -9,18 +9,17 @@
 
 
 
-void read_graph_from_file_1(char *filename, int *Nodes, int *Edges, char ***table2D){
+void read_graph_from_file_1(char *filename, int *Nodes, char ***table2D){
 /// -----------------------------------------------------------
 // # Read file and extract data
 // Input:
 // * filename:  Holding the name of the web graph
 // * Nodes:     Empty parameter
-// * Edges:     Empty parameter
 
 /// -----------------------------------------------------------
     int row = 0;
     int col = 0;
-
+    int Edges = 0;
     FILE *datafile;
     datafile = fopen(filename, "r");
 
@@ -31,7 +30,8 @@ void read_graph_from_file_1(char *filename, int *Nodes, int *Edges, char ***tabl
 
     fscanf(datafile, "%*[^\n]\n");                 // Skip lines to relevant data
     fscanf(datafile, "%*[^\n]\n");
-    fscanf(datafile, "# Nodes: %d Edges: %d\n", &*Nodes, &*Edges); // Extract data
+    fscanf(datafile, "# Nodes: %d Edges: %d\n", &*Nodes, &Edges); // Extract data
+    //fscanf(datafile, "# Nodes: %d\n", &*Nodes); // Extract data
     fscanf(datafile, "%*[^\n]\n");
 
     int N = *Nodes;
@@ -50,7 +50,7 @@ void read_graph_from_file_1(char *filename, int *Nodes, int *Edges, char ***tabl
     fclose (datafile);
 }
 
-void read_graph_from_file_2(char *filename, int *Nodes, int *Edges, int **row_ptr, int **col_idx){
+void read_graph_from_file_2(char *filename, int *Nodes, int *N_links, int **row_ptr, int **col_idx){
 /// -----------------------------------------------------------
 // # Read file and extract data
 // Input:
@@ -74,11 +74,11 @@ void read_graph_from_file_2(char *filename, int *Nodes, int *Edges, int **row_pt
 
     fscanf(datafile, "%*[^\n]\n");                 // Skip lines to relevant data
     fscanf(datafile, "%*[^\n]\n");
-    fscanf(datafile, "# Nodes: %d Edges: %d\n", &*Nodes, &*Edges); // Extract data
+    fscanf(datafile, "# Nodes: %d Edges: %d\n", &*Nodes, &*N_links); // Extract data
     fscanf(datafile, "%*[^\n]\n");
 
     //int N = *Nodes;
-    int E = *Edges;
+    int E = *N_links;
 
     allocVector(col_idx, E);
     allocVector(row_ptr, E);

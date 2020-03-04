@@ -18,7 +18,7 @@ int main(int argc, char *argv[]){
   char* filename = argv[1];
 
   int Nodes = 0;
-  int Edges = 0;
+  int N_links = 0;
   double start, end, timer;
 
 
@@ -34,7 +34,7 @@ int main(int argc, char *argv[]){
     // Set up time for clocking the task
     start = omp_get_wtime();
 
-    read_graph_from_file_1(filename, &Nodes, &Edges, &table2D); // Do not use to big of a file
+    read_graph_from_file_1(filename, &Nodes, &table2D); // Do not use to big of a file
 
     end = omp_get_wtime();
     timer = end - start;
@@ -52,7 +52,7 @@ int main(int argc, char *argv[]){
   int *col_idx = NULL;
 
   start = omp_get_wtime();
-  read_graph_from_file_2(filename, &Nodes, &Edges, &row_ptr, &col_idx);
+  read_graph_from_file_2(filename, &Nodes, &N_links, &row_ptr, &col_idx);
 
   end = omp_get_wtime();
   timer = end - start;
@@ -64,7 +64,7 @@ int main(int argc, char *argv[]){
   }
   else{
     start = omp_get_wtime();
-    sort_numbers_ascending(row_ptr, col_idx, Edges);
+    sort_numbers_ascending(row_ptr, col_idx, N_links);
     end = omp_get_wtime();
 
     timer = end - start;
@@ -74,8 +74,8 @@ int main(int argc, char *argv[]){
 
 
 
-  //printVectorToTerminal(row_ptr, col_idx, Edges);
-  //WriteVectortoFile(row_ptr, col_idx, Edges);
+  //printVectorToTerminal(row_ptr, col_idx, N_links);
+  //WriteVectortoFile(row_ptr, col_idx, N_links);
 
   free1D(col_idx);
   free1D(row_ptr);
