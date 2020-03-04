@@ -59,7 +59,20 @@ int main(int argc, char *argv[]){
 
   printf("Time used for read_graph_from_file_2 is %fs \n", timer);
 
-  //sort_numbers_ascending(&row_ptr, &col_idx, Edges);
+  if (strcmp(filename, "web-NotreDame.txt") == 0 ){
+    printf("File is to big for sort_numbers_ascending \n");
+  }
+  else{
+    start = omp_get_wtime();
+    sort_numbers_ascending(row_ptr, col_idx, Edges);
+    end = omp_get_wtime();
+
+    timer = end - start;
+
+    printf("Time used for sorting the numbers is %fs \n", timer);
+  }
+
+
 
   //printVectorToTerminal(row_ptr, col_idx, Edges);
   //WriteVectortoFile(row_ptr, col_idx, Edges);

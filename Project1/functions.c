@@ -37,15 +37,15 @@ void read_graph_from_file_1(char *filename, int *Nodes, int *Edges, char ***tabl
     int N = *Nodes;
 
     alloc2DMatrix(table2D, N);
+    construct2DMatrix(table2D, N);
 
     while (fscanf(datafile, "%d %d", &col, &row) != EOF){ // Scan to end of file
 
         if (row == col){
-            continue;                            // Assure we skip self links
+          continue;                                       // Assure we skip self links
         }
         (*table2D)[row][col] = 1;
     }
-
 
     fclose (datafile);
 }
@@ -83,23 +83,14 @@ void read_graph_from_file_2(char *filename, int *Nodes, int *Edges, int **row_pt
     allocVector(col_idx, E);
     allocVector(row_ptr, E);
 
-
     while (fscanf(datafile, "%d %d", &col, &row) != EOF){ // Scan to end of file
 
-        if (col == row){
-            continue;                            // Assure we skip self links
-        }
 
         (*col_idx)[index] = col;                 // Saves coloumn index
         (*row_ptr)[index] = row;                 // Saves row index
 
-        //col_idx[index] = col;                    // Saves coloumn index
-        //row_ptr[index] = row;                    // Saves row index
-
-        //printf(" %d  %d  %d  %d \n", row, (*row_ptr)[index], col, (*col_idx)[index]);
         index++;
     }
-    printVectorToTerminal2(row_ptr, col_idx, E);
 
     fclose (datafile);
 }
@@ -134,11 +125,11 @@ void free1D(int *a){
     free(a);
 }
 
-void construct2DMatrix(char **A, int N){
+void construct2DMatrix(char ***A, int N){
 
   for (int i = 0; i < N; i++){
     for (int j = 0; j < N; j++){
-      A[i][j] = 0;
+      (*A)[i][j] = 0;
     }
   }
 
@@ -170,6 +161,22 @@ void WriteVectortoFile(int *a, int *b, int N){
       fprintf(fp, "\n");
   }
   fclose(fp);
+}
+
+
+// Print vectors values in a file.
+void WriteVectortoFile2(int **a, int **b, int N){
+  FILE *fp;
+  fp = fopen("CRS", "w");
+  fprintf(fp, " row  col \n");
+
+  for (int i = 0; i < N; i++){
+      fprintf(fp, "  %d  ", (*a)[i]);
+      fprintf(fp, "  %d  ", (*b)[i]);
+      fprintf(fp, "\n");
+  }
+  fclose(fp);
+
 }
 
 // Print matrix values.
@@ -217,14 +224,13 @@ void sort_numbers_ascending(int *a, int *b, int N){
             a[j] = temp1;
             b[j] = temp2;
          }
-         while( a[i] == a[j] && b[i] > b[j] ){
+
+         if( a[i] == a[j] && b[i] > b[j] ){
            temp3 = b[i];
            b[i] = b[j];
            b[j] = temp3;
          }
+
       }
    }
-
-
-
 }
