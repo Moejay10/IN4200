@@ -74,7 +74,7 @@ int main(int argc, char *argv[]){
 
 
 
-  //printVectorToTerminal(row_ptr, col_idx, N_links);
+  printVectorToTerminal(row_ptr, col_idx, N_links);
   //WriteVectortoFile(row_ptr, col_idx, N_links);
 
   free1D(col_idx);

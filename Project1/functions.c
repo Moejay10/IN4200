@@ -62,6 +62,7 @@ void read_graph_from_file_2(char *filename, int *Nodes, int *N_links, int **row_
 
     int row = 0;
     int col = 0;
+    int nnz = 0;
     int index   = 0;
 
     FILE *datafile;
@@ -77,22 +78,67 @@ void read_graph_from_file_2(char *filename, int *Nodes, int *N_links, int **row_
     fscanf(datafile, "# Nodes: %d Edges: %d\n", &*Nodes, &*N_links); // Extract data
     fscanf(datafile, "%*[^\n]\n");
 
-    //int N = *Nodes;
-    int E = *N_links;
+    int N_rows = *Nodes +1;
 
-    allocVector(col_idx, E);
-    allocVector(row_ptr, E);
+    //Allocating memory for vectors
+    int *colum_indices = (int*)malloc(*N_links*sizeof(int));;
+    int *row_indices = (int*)malloc(*N_links*sizeof(int));
+    int *val = (int*)malloc(*N_links*sizeof(int)); // nonzero values
+
+
+
 
     while (fscanf(datafile, "%d %d", &col, &row) != EOF){ // Scan to end of file
 
-
-        (*col_idx)[index] = col;                 // Saves coloumn index
-        (*row_ptr)[index] = row;                 // Saves row index
+        val[index] = 1;                   // Saves nonzero values
+        colum_indices[index] = col;       // Saves coloumn index
+        row_indices[index] = row;         // Saves row index
 
         index++;
     }
 
     fclose (datafile);
+
+    *col_idx = (int*)malloc(*N_links*sizeof(int));
+    *row_ptr = (int*)malloc((N_rows)*sizeof(int));
+
+    for (int i = 0; i < N_rows; i++){
+      (*row_ptr)[i] = 0;
+    }
+
+    for (int i = 0; i < *N_links; i++){
+    (*row_ptr)[(row_indices)[i]]++;
+  }
+
+  int sum = 0;
+  int tmp;
+  for (int i = 0; i < N_rows; i++){
+    tmp = (*row_ptr)[i];
+    (*row_ptr)[i] = sum;
+    sum += tmp;
+  }
+
+  (*row_ptr)[N_rows] = *N_links;
+
+  for (int i = 0; i < *N_links; i++){
+    int row = (row_indices)[i];
+    int dest = (*row_ptr)[row];
+    (*col_idx)[dest] = (colum_indices)[i];
+
+    (*row_ptr)[row]++;
+  }
+
+  int last = 0;
+  for (int i = 0; i < N_rows; i++){
+    int tmp = (*row_ptr)[i];
+    (*row_ptr)[i] = last;
+    last = tmp;
+  }
+
+  free(colum_indices);
+  free(row_indices);
+  free(val);
+
 }
 
 void alloc2DMatrix(char ***A, int N){
