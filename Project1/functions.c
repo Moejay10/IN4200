@@ -38,7 +38,7 @@ void read_graph_from_file_1(char *filename, int *Nodes, int *Edges, char ***tabl
 
     alloc2DMatrix(table2D, N);
 
-    while (fscanf(datafile, "%i %i", &col, &row) != EOF){ // Scan to end of file
+    while (fscanf(datafile, "%d %d", &col, &row) != EOF){ // Scan to end of file
 
         if (row == col){
             continue;                            // Assure we skip self links
@@ -84,7 +84,7 @@ void read_graph_from_file_2(char *filename, int *Nodes, int *Edges, int **row_pt
     allocVector(row_ptr, E);
 
 
-    while (index < E && fscanf(datafile, "%i %i", &col, &row) != EOF){ // Scan to end of file
+    while (fscanf(datafile, "%d %d", &col, &row) != EOF){ // Scan to end of file
 
         if (col == row){
             continue;                            // Assure we skip self links
@@ -96,11 +96,10 @@ void read_graph_from_file_2(char *filename, int *Nodes, int *Edges, int **row_pt
         //col_idx[index] = col;                    // Saves coloumn index
         //row_ptr[index] = row;                    // Saves row index
 
-        //printf(" %d  %d \n", col, (*col_idx)[index]);
-        //printf(" %d  %d \n", row, (*row_ptr)[index]);
+        //printf(" %d  %d  %d  %d \n", row, (*row_ptr)[index], col, (*col_idx)[index]);
         index++;
-
     }
+    printVectorToTerminal2(row_ptr, col_idx, E);
 
     fclose (datafile);
 }
@@ -189,6 +188,16 @@ void printVectorToTerminal(int *a, int *b, int N){
   for (int i = 0; i < N; i++){
     printf("  %d  ", a[i]);
     printf("  %d  ", b[i]);
+    printf("\n");
+  }
+}
+
+// Print vectors values.
+void printVectorToTerminal2(int **a, int **b, int N){
+  printf(" row  col \n");
+  for (int i = 0; i < N; i++){
+    printf("  %d  ", (*a)[i]);
+    printf("  %d  ", (*b)[i]);
     printf("\n");
   }
 }

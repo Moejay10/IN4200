@@ -48,8 +48,8 @@ int main(int argc, char *argv[]){
 
 
 
-  int *row_ptr;
-  int *col_idx;
+  int *row_ptr = NULL;
+  int *col_idx = NULL;
 
   start = omp_get_wtime();
   read_graph_from_file_2(filename, &Nodes, &Edges, &row_ptr, &col_idx);
@@ -61,7 +61,7 @@ int main(int argc, char *argv[]){
 
   //sort_numbers_ascending(&row_ptr, &col_idx, Edges);
 
-  printVectorToTerminal(row_ptr, col_idx, Edges);
+  //printVectorToTerminal(row_ptr, col_idx, Edges);
   //WriteVectortoFile(row_ptr, col_idx, Edges);
 
   free1D(col_idx);
