@@ -60,9 +60,6 @@ void read_graph_from_file_2(char *filename, int *Nodes, int *N_links, int **row_
 
 /// -----------------------------------------------------------
 
-    int row = 0;
-    int col = 0;
-    int index   = 0;
 
     FILE *datafile;
     datafile = fopen(filename, "r");
@@ -77,22 +74,41 @@ void read_graph_from_file_2(char *filename, int *Nodes, int *N_links, int **row_
     fscanf(datafile, "# Nodes: %d Edges: %d\n", &*Nodes, &*N_links); // Extract data
     fscanf(datafile, "%*[^\n]\n");
 
-    //int N = *Nodes;
+    int row = 0;
+    int col = 0;
+    int N_validlinks = 0;
+    int index = 0;
+
+    int N = *Nodes;
     int E = *N_links;
 
-    allocVector(col_idx, E);
-    allocVector(row_ptr, E);
+
+    //allocVector(col_idx, E);
+    //allocVector(&row_idx, E)
+    //allocVector(row_ptr, N+1);
+
 
     while (fscanf(datafile, "%d %d", &col, &row) != EOF){ // Scan to end of file
-
-
-        (*col_idx)[index] = col;                 // Saves coloumn index
-        (*row_ptr)[index] = row;                 // Saves row index
-
-        index++;
+      if (col != row){
+        N_validlinks++;
+      }
     }
-
     fclose (datafile);
+
+    int *Cols;
+    int *Rows;
+    row = col = 0;
+    allocVector(&Cols, N_validlinks);
+    allocVector(&Rows, N_validlinks);
+
+    while (fscanf(datafile, "%d %d", &col, &row) != EOF){ // Scan to end of file
+      if (col != row){
+        Cols[index] = col;
+        Rows[index] = row;
+      }
+    }
+    fclose (datafile);
+
 }
 
 void alloc2DMatrix(char ***A, int N){
