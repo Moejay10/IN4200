@@ -10,6 +10,11 @@
 void read_graph_from_file_1(char *filename, int *Nodes, char ***table2D);
 void read_graph_from_file_2(char *filename, int *Nodes, int *N_links, int **row_ptr, int **col_idx);
 
+int count_mutual_links1(int N, char **table2D, int *num_involvements);
+int count_mutual_links2(int N, int N_links, int *row_ptr, int *col_idx, int *num_involvements);
+
+
+
 void alloc2DMatrix(char ***A, int N);
 void allocVector(int **a, int N);
 
@@ -29,6 +34,7 @@ void printVectorToTerminal2(int **a, int **b, int N);
 
 
 void sort_numbers_ascending(int *a, int *b, int N);
+int factorial(int n);
 
 
 #endif // FUNCTIONS_H

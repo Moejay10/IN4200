@@ -42,7 +42,15 @@ int main(int argc, char *argv[]){
     printf("Time used for read_graph_from_file_1 is %fs \n", timer);
 
     //WriteMatrixtoFile(table2D, Nodes);
-    //printMatrixToTerminal(table2D, Nodes);
+    printMatrixToTerminal(table2D, Nodes);
+
+    int Total_involvements;
+    int *num_involvements = (int*)malloc(Nodes*sizeof(int));
+    Total_involvements = count_mutual_links1(Nodes, table2D, num_involvements);
+
+    printf("Total number of mutual web linkage are %d \n", Total_involvements);
+
+    free(num_involvements);
     free2D(table2D);
   }
 
@@ -58,28 +66,15 @@ int main(int argc, char *argv[]){
   timer = end - start;
 
   printf("Time used for read_graph_from_file_2 is %fs \n", timer);
+  int N_rows = Nodes + 1;
 
-/*
-  if (strcmp(filename, "web-NotreDame.txt") == 0 ){
-    printf("File is to big for sort_numbers_ascending \n");
-  }
-  else{
-    start = omp_get_wtime();
-    sort_numbers_ascending(row_ptr, col_idx, N_links);
-    end = omp_get_wtime();
 
-    timer = end - start;
+  //printf("row \n");
+  printVectorToTerminal(row_ptr, N_rows);
+  //printf("\n");
 
-    printf("Time used for sorting the numbers is %fs \n", timer);
-  }
-*/
-
-  printf("row \n");
-  printVectorToTerminal(row_ptr, Nodes);
-  printf("\n");
-
-  printf("col \n");
-  printVectorToTerminal(col_idx, N_links);
+  //printf("col \n");
+  //printVectorToTerminal(col_idx, N_links);
 
   //WriteVectortoFile(row_ptr, col_idx, N_links);
 

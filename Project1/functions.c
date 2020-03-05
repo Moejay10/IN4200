@@ -63,7 +63,7 @@ void read_graph_from_file_2(char *filename, int *Nodes, int *N_links, int **row_
     int row = 0;
     int col = 0;
     int nnz = 0;
-    int index   = 0;
+    int N_selflinks   = 0;
 
     FILE *datafile;
     datafile = fopen(filename, "r");
@@ -81,70 +81,115 @@ void read_graph_from_file_2(char *filename, int *Nodes, int *N_links, int **row_
     int N_rows = *Nodes +1;
 
     //Allocating memory for vectors
-    int *colum_indices = (int*)malloc(*N_links*sizeof(int));;
+    int *colum_indices = (int*)malloc(*N_links*sizeof(int));
     int *row_indices = (int*)malloc(*N_links*sizeof(int));
-
-    //int* fromNodes = malloc(nEdges*sizeof(int));
-    //int* toNodes = malloc(nEdges*sizeof(int));
-    //int* inboundCount = calloc(*Nodes,sizeof(int));
 
 
     while (fscanf(datafile, "%d %d", &col, &row) != EOF){ // Scan to end of file
-      /*
+
       if (row != col){
-        fromNodes[nnz] = col;
-        toNodes[nnz] = row;
-        inboundCount[row]++;
+        colum_indices[nnz] = col;       // Saves coloumn index
+        row_indices[nnz] = row;         // Saves row index
 
-        nnz++;
+        nnz++;                          // Number of valid links
       }
-      */
-      colum_indices[index] = col;       // Saves coloumn index
-      row_indices[index] = row;         // Saves row index
-
-        index++;
+      N_selflinks++;
     }
+
 
     fclose (datafile);
 
+    *N_links = nnz;
+
+    //Allocating memory for vectors
+    //*val = (int*)malloc(*N_links*sizeof(int));
     *col_idx = (int*)malloc(*N_links*sizeof(int));
     *row_ptr = (int*)malloc(N_rows*sizeof(int));
 
+    int *temp_row_ptr = (int*)malloc(N_rows*sizeof(int));
+
     for (int i = 0; i < N_rows; i++){
+      temp_row_ptr[i] = 0;
       (*row_ptr)[i] = 0;
     }
 
     for (int i = 0; i < *N_links; i++){
-    (*row_ptr)[(row_indices)[i]]++;
+    temp_row_ptr[row_indices[i]]++;
   }
 
-
-  for (int i = 0, sum = 0; i < N_rows; i++){
-    int tmp = (*row_ptr)[i];
-    (*row_ptr)[i] = sum;
-    sum += tmp;
+  int sum = 0;
+  int temp;
+  for (int i = 0; i < N_rows; i++){
+    temp = temp_row_ptr[i];
+    temp_row_ptr[i] = sum;
+    sum += temp;
   }
 
-  (*row_ptr)[N_rows] = *N_links;
+  //(*row_ptr)[N_rows] = *N_links;
 
+  int rows, dest;
   for (int i = 0; i < *N_links; i++){
-    int row = (row_indices)[i];
-    int dest = (*row_ptr)[row];
-    (*col_idx)[dest] = (colum_indices)[i];
+    rows = row_indices[i];
+    dest = temp_row_ptr[rows];
 
-    (*row_ptr)[row]++;
+    (*col_idx)[dest] = colum_indices[i];
+    //(*val)[dest] = vals[i];
+
+    temp_row_ptr[rows]++;
   }
 
-  for (int i = 0, last = 0; i < N_rows; i++){
-    int tmp = (*row_ptr)[i];
-    (*row_ptr)[i] = last;
-    last = tmp;
+  int last = 0;
+  for (int i = 0; i < N_rows; i++){
+    temp = temp_row_ptr[i];
+    temp_row_ptr[i] = last;
+    last = temp;
   }
 
-
+  for (int i = 1; i < N_rows; i++){
+    (*row_ptr)[i] = temp_row_ptr[i-1];
+  }
+  free(temp_row_ptr);
   free(colum_indices);
   free(row_indices);
 
+}
+
+
+int count_mutual_links1(int N, char **table2D, int *num_involvements){
+
+  int Total_involvements = 0;
+  int temp, factorials;
+  for (int i = 0; i < N; i++){
+    temp = 0;
+    for (int j = 0; j < N; j++){
+      temp += table2D[i][j];
+    }
+    if (temp > 1){
+      factorials = factorial(temp);
+      num_involvements[i] = factorials;
+      Total_involvements += factorials;
+    }
+
+  }
+
+  return Total_involvements;
+}
+
+int factorial(int n){
+  int result;
+  int term1, term2 = 1;
+  int r = 2;
+  int factor = n - r;
+
+  for (int i = n; i > 0; i--){
+    term1 *= i;
+  }
+  for (int i = factor; i > 0; i--){
+    term2 *= i;
+  }
+
+  result = (int) term1/(term2*r);
+  return result;
 }
 
 void alloc2DMatrix(char ***A, int N){
