@@ -25,12 +25,12 @@ void free1D(int *a);
 
 void WriteMatrixtoFile(char **A, int N);
 void WriteVectortoFile(int *a, int *b, int N);
-void WriteVectortoFile2(int **a, int **b, int N);
+void WriteVectortoFile2(int *a, int *b, int N_rows, int N_links);
 
 
 void printMatrixToTerminal(char **A, int N);
 void printVectorToTerminal(int *a, int N);
-void printVectorToTerminal2(int **a, int **b, int N);
+void printVectorToTerminal2(int *a, int *b, int N_rows, int N_links);
 
 
 void sort_numbers_ascending(int *a, int *b, int N);

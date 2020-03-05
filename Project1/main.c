@@ -41,14 +41,26 @@ int main(int argc, char *argv[]){
 
     printf("Time used for read_graph_from_file_1 is %fs \n", timer);
 
-    //WriteMatrixtoFile(table2D, Nodes);
-    printMatrixToTerminal(table2D, Nodes);
-
     int Total_involvements;
     int *num_involvements = (int*)malloc(Nodes*sizeof(int));
     Total_involvements = count_mutual_links1(Nodes, table2D, num_involvements);
 
+
     printf("Total number of mutual web linkage are %d \n", Total_involvements);
+
+    if (strcmp(filename, "100nodes_graph.txt") == 0 ){
+      printf("table2D is too big to print out \n");
+    }
+
+    else{
+      printMatrixToTerminal(table2D, Nodes);
+      WriteMatrixtoFile(table2D, Nodes);
+
+      printf("Number of involvements per webpage is \n");
+      printVectorToTerminal(num_involvements, Nodes);
+    }
+
+
 
     free(num_involvements);
     free2D(table2D);
@@ -69,14 +81,8 @@ int main(int argc, char *argv[]){
   int N_rows = Nodes + 1;
 
 
-  //printf("row \n");
-  printVectorToTerminal(row_ptr, N_rows);
-  //printf("\n");
-
-  //printf("col \n");
-  //printVectorToTerminal(col_idx, N_links);
-
-  //WriteVectortoFile(row_ptr, col_idx, N_links);
+  //printVectorToTerminal2(row_ptr, col_idx, N_rows, N_links);
+  //WriteVectortoFile2(row_ptr, col_idx, N_rows, N_links);
 
   free1D(col_idx);
   free1D(row_ptr);

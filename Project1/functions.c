@@ -158,16 +158,18 @@ void read_graph_from_file_2(char *filename, int *Nodes, int *N_links, int **row_
 int count_mutual_links1(int N, char **table2D, int *num_involvements){
 
   int Total_involvements = 0;
-  int temp, factorials;
+  int temp;
   for (int i = 0; i < N; i++){
     temp = 0;
     for (int j = 0; j < N; j++){
       temp += table2D[i][j];
     }
     if (temp > 1){
-      factorials = factorial(temp);
-      num_involvements[i] = factorials;
-      Total_involvements += factorials;
+      num_involvements[i] = factorial(temp);
+      Total_involvements += factorial(temp);
+    }
+    else{
+      num_involvements[i] = 0;
     }
 
   }
@@ -177,7 +179,8 @@ int count_mutual_links1(int N, char **table2D, int *num_involvements){
 
 int factorial(int n){
   int result;
-  int term1, term2 = 1;
+  int term1 = 1;
+  int term2 = 1;
   int r = 2;
   int factor = n - r;
 
@@ -188,7 +191,7 @@ int factorial(int n){
     term2 *= i;
   }
 
-  result = (int) term1/(term2*r);
+  result = term1/(term2*r);
   return result;
 }
 
@@ -262,16 +265,20 @@ void WriteVectortoFile(int *a, int *b, int N){
 
 
 // Print vectors values in a file.
-void WriteVectortoFile2(int **a, int **b, int N){
+void WriteVectortoFile2(int *a, int *b, int N_rows, int N_links){
   FILE *fp;
   fp = fopen("CRS", "w");
-  fprintf(fp, " row  col \n");
+  fprintf(fp, " row \n");
 
-  for (int i = 0; i < N; i++){
-      fprintf(fp, "  %d  ", (*a)[i]);
-      fprintf(fp, "  %d  ", (*b)[i]);
-      fprintf(fp, "\n");
+  for (int i = 0; i < N_rows; i++){
+      fprintf(fp, " %d ", a[i]);
   }
+  fprintf(fp, "\n");
+  fprintf(fp, "\ncol \n");
+  for (int i = 0; i < N_links; i++){
+      fprintf(fp, " %d ", b[i]);
+  }
+
   fclose(fp);
 
 }
@@ -296,13 +303,21 @@ void printVectorToTerminal(int *a, int N){
 }
 
 // Print vectors values.
-void printVectorToTerminal2(int **a, int **b, int N){
-  printf(" row  col \n");
-  for (int i = 0; i < N; i++){
-    printf("  %d  ", (*a)[i]);
-    printf("  %d  ", (*b)[i]);
+void printVectorToTerminal2(int *a, int *b, int N_rows, int N_links){
+  printf("row \n");
+  for (int i = 0; i < N_rows; i++){
+    printf(" %d ", a[i]);
+  }
+
+  printf("\n");
+
+  printf("\ncol \n");
+  for (int i = 0; i < N_links; i++){
+    printf(" %d ", b[i]);
     printf("\n");
   }
+
+
 }
 
 
