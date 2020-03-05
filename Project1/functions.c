@@ -83,16 +83,24 @@ void read_graph_from_file_2(char *filename, int *Nodes, int *N_links, int **row_
     //Allocating memory for vectors
     int *colum_indices = (int*)malloc(*N_links*sizeof(int));;
     int *row_indices = (int*)malloc(*N_links*sizeof(int));
-    int *val = (int*)malloc(*N_links*sizeof(int)); // nonzero values
 
-
+    //int* fromNodes = malloc(nEdges*sizeof(int));
+    //int* toNodes = malloc(nEdges*sizeof(int));
+    //int* inboundCount = calloc(*Nodes,sizeof(int));
 
 
     while (fscanf(datafile, "%d %d", &col, &row) != EOF){ // Scan to end of file
+      /*
+      if (row != col){
+        fromNodes[nnz] = col;
+        toNodes[nnz] = row;
+        inboundCount[row]++;
 
-        val[index] = 1;                   // Saves nonzero values
-        colum_indices[index] = col;       // Saves coloumn index
-        row_indices[index] = row;         // Saves row index
+        nnz++;
+      }
+      */
+      colum_indices[index] = col;       // Saves coloumn index
+      row_indices[index] = row;         // Saves row index
 
         index++;
     }
@@ -100,7 +108,7 @@ void read_graph_from_file_2(char *filename, int *Nodes, int *N_links, int **row_
     fclose (datafile);
 
     *col_idx = (int*)malloc(*N_links*sizeof(int));
-    *row_ptr = (int*)malloc((N_rows)*sizeof(int));
+    *row_ptr = (int*)malloc(N_rows*sizeof(int));
 
     for (int i = 0; i < N_rows; i++){
       (*row_ptr)[i] = 0;
@@ -110,10 +118,9 @@ void read_graph_from_file_2(char *filename, int *Nodes, int *N_links, int **row_
     (*row_ptr)[(row_indices)[i]]++;
   }
 
-  int sum = 0;
-  int tmp;
-  for (int i = 0; i < N_rows; i++){
-    tmp = (*row_ptr)[i];
+
+  for (int i = 0, sum = 0; i < N_rows; i++){
+    int tmp = (*row_ptr)[i];
     (*row_ptr)[i] = sum;
     sum += tmp;
   }
@@ -128,16 +135,15 @@ void read_graph_from_file_2(char *filename, int *Nodes, int *N_links, int **row_
     (*row_ptr)[row]++;
   }
 
-  int last = 0;
-  for (int i = 0; i < N_rows; i++){
+  for (int i = 0, last = 0; i < N_rows; i++){
     int tmp = (*row_ptr)[i];
     (*row_ptr)[i] = last;
     last = tmp;
   }
 
+
   free(colum_indices);
   free(row_indices);
-  free(val);
 
 }
 
@@ -236,11 +242,10 @@ void printMatrixToTerminal(char **A, int N){
 }
 
 // Print vectors values.
-void printVectorToTerminal(int *a, int *b, int N){
-  printf(" row  col \n");
+void printVectorToTerminal(int *a, int N){
+  //printf(" row  col \n");
   for (int i = 0; i < N; i++){
     printf("  %d  ", a[i]);
-    printf("  %d  ", b[i]);
     printf("\n");
   }
 }

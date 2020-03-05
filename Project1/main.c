@@ -59,6 +59,7 @@ int main(int argc, char *argv[]){
 
   printf("Time used for read_graph_from_file_2 is %fs \n", timer);
 
+/*
   if (strcmp(filename, "web-NotreDame.txt") == 0 ){
     printf("File is to big for sort_numbers_ascending \n");
   }
@@ -71,10 +72,15 @@ int main(int argc, char *argv[]){
 
     printf("Time used for sorting the numbers is %fs \n", timer);
   }
+*/
 
+  printf("row \n");
+  printVectorToTerminal(row_ptr, Nodes);
+  printf("\n");
 
+  printf("col \n");
+  printVectorToTerminal(col_idx, N_links);
 
-  printVectorToTerminal(row_ptr, col_idx, N_links);
   //WriteVectortoFile(row_ptr, col_idx, N_links);
 
   free1D(col_idx);

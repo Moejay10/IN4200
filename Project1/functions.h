@@ -24,7 +24,7 @@ void WriteVectortoFile2(int **a, int **b, int N);
 
 
 void printMatrixToTerminal(char **A, int N);
-void printVectorToTerminal(int *a, int *b, int N);
+void printVectorToTerminal(int *a, int N);
 void printVectorToTerminal2(int **a, int **b, int N);
 
 
