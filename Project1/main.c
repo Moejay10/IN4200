@@ -46,20 +46,21 @@ int main(int argc, char *argv[]){
     Total_involvements = count_mutual_links1(Nodes, table2D, num_involvements);
 
 
-    printf("Total number of mutual web linkage are %d \n", Total_involvements);
+
 
     if (strcmp(filename, "100nodes_graph.txt") == 0 ){
       printf("table2D is too big to print out \n");
     }
 
     else{
-      printMatrixToTerminal(table2D, Nodes);
-      WriteMatrixtoFile(table2D, Nodes);
+      //printMatrixToTerminal(table2D, Nodes);
+      //WriteMatrixtoFile(table2D, Nodes);
 
       printf("Number of involvements per webpage is \n");
       printVectorToTerminal(num_involvements, Nodes);
     }
 
+    printf("Total number of mutual web linkage are %d \n", Total_involvements);
 
 
     free(num_involvements);
@@ -84,6 +85,18 @@ int main(int argc, char *argv[]){
   //printVectorToTerminal2(row_ptr, col_idx, N_rows, N_links);
   //WriteVectortoFile2(row_ptr, col_idx, N_rows, N_links);
 
+  int Total_involvements1;
+  int *num_involvements1 = (int*)malloc(Nodes*sizeof(int));
+
+  Total_involvements1 = count_mutual_links2(Nodes, N_links, row_ptr, col_idx, num_involvements1);
+  printf("Total number of mutual web linkage are %d \n", Total_involvements1);
+
+  //printf("Number of involvements per webpage is \n");
+  //printVectorToTerminal(num_involvements1, Nodes);
+
+
+
+  free(num_involvements1);
   free1D(col_idx);
   free1D(row_ptr);
 

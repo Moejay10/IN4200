@@ -125,7 +125,7 @@ void read_graph_from_file_2(char *filename, int *Nodes, int *N_links, int **row_
     sum += temp;
   }
 
-  //(*row_ptr)[N_rows] = *N_links;
+  //temp_row_ptr[N_rows] = *N_links;
 
   int rows, dest;
   for (int i = 0; i < *N_links; i++){
@@ -157,43 +157,81 @@ void read_graph_from_file_2(char *filename, int *Nodes, int *N_links, int **row_
 
 int count_mutual_links1(int N, char **table2D, int *num_involvements){
 
+  int *temp_num_involvements = (int*)malloc(N*sizeof(int));
+
+
+  for (int i = 0; i < N; i++){
+    num_involvements[i] = 0;
+    temp_num_involvements[i] = 0;
+  }
+
   int Total_involvements = 0;
   int temp;
   for (int i = 0; i < N; i++){
     temp = 0;
     for (int j = 0; j < N; j++){
       temp += table2D[i][j];
-    }
-    if (temp > 1){
-      num_involvements[i] = factorial(temp);
-      Total_involvements += factorial(temp);
-    }
-    else{
-      num_involvements[i] = 0;
+      temp_num_involvements[j] = table2D[i][j];
     }
 
+    counter(temp_num_involvements, num_involvements, temp, N);
+
+    Total_involvements += factorial(temp);
   }
+
+  free(temp_num_involvements);
 
   return Total_involvements;
 }
 
-int factorial(int n){
-  int result;
-  int term1 = 1;
-  int term2 = 1;
-  int r = 2;
-  int factor = n - r;
 
-  for (int i = n; i > 0; i--){
-    term1 *= i;
-  }
-  for (int i = factor; i > 0; i--){
-    term2 *= i;
+int count_mutual_links2(int N, int N_links, int *row_ptr, int *col_idx, int *num_involvements){
+
+  int *temp_num_involvements = (int*)malloc(N*sizeof(int));
+
+
+  for (int i = 0; i < N; i++){
+    num_involvements[i] = 0;
+    temp_num_involvements[i] = 0;
+
   }
 
-  result = term1/(term2*r);
-  return result;
+  int Total_involvements = 0;
+  int temp = 0;
+  for (int i = 1; i <= N; i++){
+    temp = row_ptr[i] - row_ptr[i-1];
+
+    for (int j = row_ptr[i-1]; j < row_ptr[i]; j++){
+      temp_num_involvements[col_idx[j]] = 1;
+    }
+
+    counter(temp_num_involvements, num_involvements, temp, N);
+
+    Total_involvements += factorial(temp);
+  }
+
+  temp = N_links - row_ptr[N];
+  for (int j = row_ptr[N]; j < N_links; j++){
+    temp_num_involvements[col_idx[j]] = 1;
+  }
+
+  counter(temp_num_involvements, num_involvements, temp, N);
+
+  Total_involvements += factorial(temp);
+
+  free(temp_num_involvements);
+
+  return Total_involvements;
 }
+
+
+void top_n_webpages (int num_webpages, int *num_involvements, int n){
+
+}
+
+
+
+
 
 void alloc2DMatrix(char ***A, int N){
 
@@ -344,4 +382,36 @@ void sort_numbers_ascending(int *a, int *b, int N){
 
       }
    }
+}
+
+
+int factorial(int n){
+
+  if (n < 2){
+    return 0;
+  }
+
+  else{
+    int result;
+    int term1 = 1;
+    int r = 2;
+
+    for (int i = n; i > n-2; i--){
+      term1 *= i;
+    }
+
+
+    result = term1/r;
+    return result;
+  }
+}
+
+void counter(int *temp_num_involvements, int *num_involvements, int temp, int N){
+  for (int i = 0; i < N; i++){
+    if (temp_num_involvements[i] > 0){
+      temp_num_involvements[i] = temp - temp_num_involvements[i];
+      num_involvements[i] += temp_num_involvements[i];
+      temp_num_involvements[i] = 0;
+    }
+  }
 }

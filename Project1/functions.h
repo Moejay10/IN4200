@@ -13,7 +13,7 @@ void read_graph_from_file_2(char *filename, int *Nodes, int *N_links, int **row_
 int count_mutual_links1(int N, char **table2D, int *num_involvements);
 int count_mutual_links2(int N, int N_links, int *row_ptr, int *col_idx, int *num_involvements);
 
-
+void top_n_webpages (int num_webpages, int *num_involvements, int n);
 
 void alloc2DMatrix(char ***A, int N);
 void allocVector(int **a, int N);
@@ -35,6 +35,7 @@ void printVectorToTerminal2(int *a, int *b, int N_rows, int N_links);
 
 void sort_numbers_ascending(int *a, int *b, int N);
 int factorial(int n);
+void counter(int *temp_num_involvements, int *num_involvements, int temp, int N);
 
 
 #endif // FUNCTIONS_H
