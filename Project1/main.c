@@ -88,7 +88,13 @@ int main(int argc, char *argv[]){
   int Total_involvements1;
   int *num_involvements1 = (int*)malloc(Nodes*sizeof(int));
 
+  start = omp_get_wtime();
   Total_involvements1 = count_mutual_links2(Nodes, N_links, row_ptr, col_idx, num_involvements1);
+  end = omp_get_wtime();
+
+  timer = end - start;
+  printf("Time used for count_mutual_links2 is %fs \n", timer);
+
   printf("Total number of mutual web linkage are %d \n", Total_involvements1);
 
   //printf("Number of involvements per webpage is \n");

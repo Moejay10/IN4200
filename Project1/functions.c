@@ -198,6 +198,8 @@ int count_mutual_links2(int N, int N_links, int *row_ptr, int *col_idx, int *num
 
   int Total_involvements = 0;
   int temp = 0;
+
+
   for (int i = 1; i <= N; i++){
     temp = row_ptr[i] - row_ptr[i-1];
 
@@ -209,6 +211,7 @@ int count_mutual_links2(int N, int N_links, int *row_ptr, int *col_idx, int *num
 
     Total_involvements += factorial(temp);
   }
+
 
   temp = N_links - row_ptr[N];
   for (int j = row_ptr[N]; j < N_links; j++){
