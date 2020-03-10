@@ -272,8 +272,9 @@ int OMP_count_mutual_links2(int N, int N_links, int *row_ptr, int *col_idx, int 
 }
 
 
-
-
+int cmpfunc (const void * a, const void * b){
+   return ( *(int*)a - *(int*)b );
+}
 
 
 void top_n_webpages(int num_webpages, int *num_involvements, int n){
@@ -283,11 +284,13 @@ void top_n_webpages(int num_webpages, int *num_involvements, int n){
     temp_num_involvements[i] = i+1;
   }
 
-  sort_numbers(num_involvements, temp_num_involvements, num_webpages);
+  //sort_numbers(num_involvements, temp_num_involvements, num_webpages);
+  qsort(num_involvements, num_webpages, sizeof(int), cmpfunc);
+
 
   printf("Webpage   # Involvements \n");
 
-  for (int i = 0; i < n; i++){
+  for (int i = num_webpages-1; i > num_webpages - n-1; i--){
     printf(" %d            %d \n", temp_num_involvements[i], num_involvements[i]);
     printf("\n");
   }

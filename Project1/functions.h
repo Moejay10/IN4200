@@ -44,5 +44,6 @@ void sort_numbers(int *a, int *b, int N);
 int factorial(int n);
 void counter(int *temp_num_involvements, int *num_involvements, int temp, int N);
 
+int cmpfunc (const void * a, const void * b);
 
 #endif // FUNCTIONS_H
