@@ -148,7 +148,7 @@ int main(int argc, char *argv[]){
   //printVectorToTerminal(num_involvements1, Nodes);
 
   start = omp_get_wtime();
-  top_n_webpages(Nodes, num_involvements1, 3);
+  top_n_webpages(Nodes, num_involvements1, 8);
   end = omp_get_wtime();
 
   timer = end - start;
@@ -169,7 +169,7 @@ printf("OpenMP Parallelisation 2 \n");
 
 int Total_involvements3;
 int *num_involvements3 = (int*)malloc(Nodes*sizeof(int));
-int num_threads1 = 4;
+int num_threads1 = 1;
 
 start = omp_get_wtime();
 Total_involvements3 = OMP_count_mutual_links2(Nodes, N_links, row_ptr, col_idx, num_involvements3, num_threads1);
@@ -184,7 +184,7 @@ printf("Total number of mutual web linkage are %d \n", Total_involvements3);
 //printVectorToTerminal(num_involvements3, Nodes);
 
 start = omp_get_wtime();
-OMP_top_n_webpages(Nodes, num_involvements1, 3, num_threads1);
+OMP_top_n_webpages(Nodes, num_involvements1, 8, num_threads1);
 end = omp_get_wtime();
 
 timer = end - start;
