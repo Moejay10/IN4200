@@ -125,7 +125,7 @@ void read_graph_from_file_2(char *filename, int *Nodes, int *N_links, int **row_
     sum += temp;
   }
 
-  //temp_row_ptr[N_rows] = *N_links;
+  temp_row_ptr[N_rows] = *N_links;
 
   int rows, dest;
   for (int i = 0; i < *N_links; i++){
@@ -145,8 +145,8 @@ void read_graph_from_file_2(char *filename, int *Nodes, int *N_links, int **row_
     last = temp;
   }
 
-  for (int i = 1; i < N_rows; i++){
-    (*row_ptr)[i] = temp_row_ptr[i-1];
+  for (int i = 0; i < N_rows; i++){
+    (*row_ptr)[i] = temp_row_ptr[i];
   }
   free(temp_row_ptr);
   free(colum_indices);
@@ -176,6 +176,7 @@ int count_mutual_links1(int N, char **table2D, int *num_involvements){
 
     counter(temp_num_involvements, num_involvements, temp, N);
 
+
     Total_involvements += factorial(temp);
   }
 
@@ -186,12 +187,10 @@ int count_mutual_links1(int N, char **table2D, int *num_involvements){
 
 int count_mutual_links2(int N, int N_links, int *row_ptr, int *col_idx, int *num_involvements){
 
-  int *temp_num_involvements = (int*)malloc(N*sizeof(int));
 
 
   for (int i = 0; i < N; i++){
     num_involvements[i] = 0;
-    temp_num_involvements[i] = 0;
   }
 
   int Total_involvements = 0;
@@ -200,30 +199,81 @@ int count_mutual_links2(int N, int N_links, int *row_ptr, int *col_idx, int *num
 
   for (int i = 1; i <= N; i++){
     temp = row_ptr[i] - row_ptr[i-1];
-
     for (int j = row_ptr[i-1]; j < row_ptr[i]; j++){
-      temp_num_involvements[col_idx[j]] = 1;
-    }
-
-    counter(temp_num_involvements, num_involvements, temp, N);
+        num_involvements[col_idx[j]] += temp-1;
+      }
 
     Total_involvements += factorial(temp);
   }
 
 
-  temp = N_links - row_ptr[N];
-  for (int j = row_ptr[N]; j < N_links; j++){
-    temp_num_involvements[col_idx[j]] = 1;
+  return Total_involvements;
+}
+
+
+
+int OMP_count_mutual_links1(int N, char **table2D, int *num_involvements, int num_threads){
+
+  int *temp_num_involvements = (int*)malloc(N*sizeof(int));
+
+  for (int i = 0; i < N; i++){
+    num_involvements[i] = 0;
+    temp_num_involvements[i] = 0;
   }
 
-  counter(temp_num_involvements, num_involvements, temp, N);
+  int Total_involvements = 0;
+  int temp;
 
-  Total_involvements += factorial(temp);
+  #pragma omp parallel for private(temp) reduction(+:Total_involvements, num_involvements[:N], temp_num_involvements[:N]) num_threads(num_threads)
+  for (int i = 0; i < N; i++)
+  {
+  temp = 0;
+      for (int j = 0; j < N; j++){
+        temp += table2D[i][j];
+        temp_num_involvements[j] = table2D[i][j];
+      }
+
+      counter(temp_num_involvements, num_involvements, temp, N);
+
+
+      Total_involvements += factorial(temp);
+  }
 
   free(temp_num_involvements);
 
   return Total_involvements;
 }
+
+
+int OMP_count_mutual_links2(int N, int N_links, int *row_ptr, int *col_idx, int *num_involvements, int num_threads){
+
+
+
+  for (int i = 0; i < N; i++){
+    num_involvements[i] = 0;
+  }
+
+  int Total_involvements = 0;
+  int temp = 0;
+
+  #pragma omp parallel for private(temp) reduction(+:Total_involvements, num_involvements[:N]) num_threads(num_threads)
+  for (int i = 1; i <= N; i++){
+    temp = row_ptr[i] - row_ptr[i-1];
+    for (int j = row_ptr[i-1]; j < row_ptr[i]; j++){
+        num_involvements[col_idx[j]] += temp-1;
+      }
+
+    Total_involvements += factorial(temp);
+  }
+
+
+
+  return Total_involvements;
+}
+
+
+
+
 
 
 void top_n_webpages(int num_webpages, int *num_involvements, int n){
@@ -247,7 +297,40 @@ void top_n_webpages(int num_webpages, int *num_involvements, int n){
 }
 
 
+void OMP_top_n_webpages(int num_webpages, int *num_involvements, int n, int num_threads){
+  int *temp_num_involvements = (int*)malloc(num_webpages*sizeof(int));
+  int temp1, temp2;
 
+  for (int i = 0; i < num_webpages; i++){
+    temp_num_involvements[i] = i+1;
+  }
+
+  //sort_numbers(num_involvements, temp_num_involvements, num_webpages);
+  int i;
+  #pragma omp parallel for private(i) num_threads(num_threads)
+  for (i = 0; i < num_webpages; i++){
+     for (int j = i + 1; j < num_webpages; j++){
+        if (num_involvements[i] < num_involvements[j]){
+           temp1 = num_involvements[i];
+           temp2 = temp_num_involvements[i];
+           num_involvements[i] = num_involvements[j];
+           temp_num_involvements[i] = temp_num_involvements[j];
+           num_involvements[j] = temp1;
+           temp_num_involvements[j] = temp2;
+        }
+     }
+  }
+
+  printf("Webpage   # Involvements \n");
+
+  for (int i = 0; i < n; i++){
+    printf(" %d            %d \n", temp_num_involvements[i], num_involvements[i]);
+    printf("\n");
+  }
+
+  free(temp_num_involvements);
+
+}
 
 
 void alloc2DMatrix(char ***A, int N){
@@ -375,132 +458,7 @@ void printVectorToTerminal2(int *a, int *b, int N_rows, int N_links){
 }
 
 
-int OMP_count_mutual_links1(int N, char **table2D, int *num_involvements, int num_threads){
 
-  int *temp_num_involvements = (int*)malloc(N*sizeof(int));
-
-  for (int i = 0; i < N; i++){
-    num_involvements[i] = 0;
-    temp_num_involvements[i] = 0;
-  }
-
-  int Total_involvements = 0;
-  int temp;
-
-  #pragma omp parallel for private(temp) reduction(+:Total_involvements, num_involvements[:N], temp_num_involvements[:N]) num_threads(num_threads)
-  for (int i = 0; i < N; i++)
-  {
-  temp = 0;
-      for (int j = 0; j < N; j++){
-        temp += table2D[i][j];
-        temp_num_involvements[j] = table2D[i][j];
-      }
-
-      counter(temp_num_involvements, num_involvements, temp, N);
-      /*
-      for (int i = 0; i < N; i++){
-        if (temp_num_involvements[i] > 0){
-          temp_num_involvements[i] = temp - temp_num_involvements[i];
-          num_involvements[i] += temp_num_involvements[i];
-          temp_num_involvements[i] = 0;
-        }
-      }
-      */
-
-      Total_involvements += factorial(temp);
-  }
-
-  free(temp_num_involvements);
-
-  return Total_involvements;
-}
-
-
-int OMP_count_mutual_links2(int N, int N_links, int *row_ptr, int *col_idx, int *num_involvements, int num_threads){
-
-  int *temp_num_involvements = (int*)malloc(N*sizeof(int));
-
-
-  for (int i = 0; i < N; i++){
-    num_involvements[i] = 0;
-    temp_num_involvements[i] = 0;
-  }
-
-  int Total_involvements = 0;
-  int temp = 0;
-
-  #pragma omp parallel for private(temp) reduction(+:Total_involvements, num_involvements[:N], temp_num_involvements[:N]) num_threads(num_threads)
-  for (int i = 1; i <= N; i++){
-    temp = row_ptr[i] - row_ptr[i-1];
-
-    for (int j = row_ptr[i-1]; j < row_ptr[i]; j++){
-      temp_num_involvements[col_idx[j]] = 1;
-    }
-
-    counter(temp_num_involvements, num_involvements, temp, N);
-    /*
-    for (int i = 0; i < N; i++){
-      if (temp_num_involvements[i] > 0){
-        temp_num_involvements[i] = temp - temp_num_involvements[i];
-        num_involvements[i] += temp_num_involvements[i];
-        temp_num_involvements[i] = 0;
-      }
-    }
-    */
-
-    Total_involvements += factorial(temp);
-  }
-
-
-  temp = N_links - row_ptr[N];
-  for (int j = row_ptr[N]; j < N_links; j++){
-    temp_num_involvements[col_idx[j]] = 1;
-  }
-
-  counter(temp_num_involvements, num_involvements, temp, N);
-
-  Total_involvements += factorial(temp);
-
-  free(temp_num_involvements);
-
-  return Total_involvements;
-}
-
-
-void OMP_top_n_webpages(int num_webpages, int *num_involvements, int n, int num_threads){
-  int *temp_num_involvements = (int*)malloc(num_webpages*sizeof(int));
-  int temp1, temp2;
-
-  for (int i = 0; i < num_webpages; i++){
-    temp_num_involvements[i] = i+1;
-  }
-
-  //sort_numbers(num_involvements, temp_num_involvements, num_webpages);
-  int i;
-  #pragma omp parallel for private(i) num_threads(num_threads)
-  for (i = 0; i < num_webpages; i++){
-     for (int j = i + 1; j < num_webpages; j++){
-        if (num_involvements[i] < num_involvements[j]){
-           temp1 = num_involvements[i];
-           temp2 = temp_num_involvements[i];
-           num_involvements[i] = num_involvements[j];
-           temp_num_involvements[i] = temp_num_involvements[j];
-           num_involvements[j] = temp1;
-           temp_num_involvements[j] = temp2;
-        }
-     }
-  }
-
-  printf("Webpage   # Involvements \n");
-
-  for (int i = 0; i < n; i++){
-    printf(" %d            %d \n", temp_num_involvements[i], num_involvements[i]);
-    printf("\n");
-  }
-
-  free(temp_num_involvements);
-
-}
 
 
 // Function to sort character array b

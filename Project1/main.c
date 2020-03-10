@@ -24,7 +24,7 @@ int main(int argc, char *argv[]){
 
   char **table2D;
 
-
+/*
 
   if (strcmp(filename, "web-NotreDame.txt") == 0 )
   {
@@ -112,7 +112,7 @@ int main(int argc, char *argv[]){
 
     }
 
-
+*/
 
   printf("\n");
 
@@ -148,7 +148,7 @@ int main(int argc, char *argv[]){
   //printVectorToTerminal(num_involvements1, Nodes);
 
   start = omp_get_wtime();
-  top_n_webpages(Nodes, num_involvements1, 3);
+  //top_n_webpages(Nodes, num_involvements1, 3);
   end = omp_get_wtime();
 
   timer = end - start;
@@ -180,8 +180,11 @@ printf("Time used for OMP_count_mutual_links2 is %fs \n", timer);
 
 printf("Total number of mutual web linkage are %d \n", Total_involvements3);
 
+//printf("Number of involvements per webpage is \n");
+//printVectorToTerminal(num_involvements3, Nodes);
+
 start = omp_get_wtime();
-OMP_top_n_webpages(Nodes, num_involvements1, 3, num_threads1);
+//OMP_top_n_webpages(Nodes, num_involvements1, 3, num_threads1);
 end = omp_get_wtime();
 
 timer = end - start;
