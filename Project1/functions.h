@@ -6,7 +6,7 @@
 #include <time.h>
 #include <omp.h> // OpenMP
 
-
+/*
 void read_graph_from_file_1(char *filename, int *Nodes, char ***table2D);
 void read_graph_from_file_2(char *filename, int *Nodes, int *N_links, int **row_ptr, int **col_idx);
 
@@ -20,7 +20,7 @@ int OMP_count_mutual_links1(int N, char **table2D, int *num_involvements, int nu
 int OMP_count_mutual_links2(int N, int N_links, int *row_ptr, int *col_idx, int *num_involvements, int num_threads);
 
 void OMP_top_n_webpages(int num_webpages, int *num_involvements, int n, int num_threads);
-
+*/
 
 void alloc2DMatrix(char ***A, int N);
 void allocVector(int **a, int N);
@@ -44,6 +44,5 @@ void sort_numbers(int *a, int *b, int N);
 int factorial(int n);
 void counter(int *temp_num_involvements, int *num_involvements, int temp, int N);
 
-int cmpfunc (const void * a, const void * b);
 
 #endif // FUNCTIONS_H

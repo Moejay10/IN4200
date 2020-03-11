@@ -1,8 +1,8 @@
 CC := gcc # Which Compiler to use
 
-LIB := -lm -fopenmp # Which libraries to use 
+LIB := -lm -fopenmp # Which libraries to use
 
-FLAGS := -Wall # Which flags to use
+FLAGS := #-Wall # Which flags to use (Warnings)
 
 PROGRAMS := program.exe
 

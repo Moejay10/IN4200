@@ -3,12 +3,12 @@
 #include <math.h>
 #include <string.h>
 #include <time.h>
-#include <omp.h> // OpenMP
+//#include <omp.h> // OpenMP
 
 #include "functions.h"
 
 
-
+/*
 void read_graph_from_file_1(char *filename, int *Nodes, char ***table2D){
 /// -----------------------------------------------------------
 // # Read file and extract data
@@ -272,8 +272,7 @@ int OMP_count_mutual_links2(int N, int N_links, int *row_ptr, int *col_idx, int 
 }
 
 
-int cmpfunc (const void * a, const void * b){
-   return ( *(int*)a - *(int*)b );
+
 }
 
 
@@ -354,7 +353,7 @@ void OMP_top_n_webpages(int num_webpages, int *num_involvements, int n, int num_
 
 
 }
-
+*/
 
 void alloc2DMatrix(char ***A, int N){
 

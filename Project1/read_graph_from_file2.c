@@ -3,8 +3,9 @@
 #include <math.h>
 #include <string.h>
 #include <time.h>
-#include <omp.h> // OpenMP
+//#include <omp.h> // OpenMP
 
+#include "functions.h"
 
 
 void read_graph_from_file_2(char *filename, int *Nodes, int *N_links, int **row_ptr, int **col_idx){
@@ -82,7 +83,7 @@ void read_graph_from_file_2(char *filename, int *Nodes, int *N_links, int **row_
     sum += temp;
   }
 
-  //temp_row_ptr[N_rows] = *N_links;
+  temp_row_ptr[N_rows] = *N_links;
 
   int rows, dest;
   for (int i = 0; i < *N_links; i++){
@@ -102,8 +103,8 @@ void read_graph_from_file_2(char *filename, int *Nodes, int *N_links, int **row_
     last = temp;
   }
 
-  for (int i = 1; i < N_rows; i++){
-    (*row_ptr)[i] = temp_row_ptr[i-1];
+  for (int i = 0; i < N_rows; i++){
+    (*row_ptr)[i] = temp_row_ptr[i];
   }
   free(temp_row_ptr);
   free(colum_indices);

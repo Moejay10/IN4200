@@ -3,8 +3,9 @@
 #include <math.h>
 #include <string.h>
 #include <time.h>
-#include <omp.h> // OpenMP
+//#include <omp.h> // OpenMP
 
+#include "functions.h"
 
 
 void read_graph_from_file_1(char *filename, int *Nodes, char ***table2D){
