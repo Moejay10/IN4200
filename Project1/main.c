@@ -24,7 +24,7 @@ int main(int argc, char *argv[]){
 
   char **table2D;
 
-/*
+
 
   if (strcmp(filename, "web-NotreDame.txt") == 0 )
   {
@@ -73,7 +73,7 @@ int main(int argc, char *argv[]){
       printf("Total number of mutual web linkage are %d \n", Total_involvements);
 
       start = omp_get_wtime();
-      top_n_webpages(Nodes, num_involvements, 3);
+      top_n_webpages(Nodes, num_involvements, 8);
       end = omp_get_wtime();
 
       timer = end - start;
@@ -101,7 +101,7 @@ int main(int argc, char *argv[]){
       printf("Total number of mutual web linkage are %d \n", Total_involvements2);
 
       start = omp_get_wtime();
-      OMP_top_n_webpages(Nodes, num_involvements2, 3, num_threads);
+      OMP_top_n_webpages(Nodes, num_involvements2, 8, num_threads);
       end = omp_get_wtime();
 
       timer = end - start;
@@ -112,7 +112,7 @@ int main(int argc, char *argv[]){
 
     }
 
-*/
+
 
   printf("\n");
 
@@ -169,7 +169,7 @@ printf("OpenMP Parallelisation 2 \n");
 
 int Total_involvements3;
 int *num_involvements3 = (int*)malloc(Nodes*sizeof(int));
-int num_threads1 = 1;
+int num_threads1 = 4;
 
 start = omp_get_wtime();
 Total_involvements3 = OMP_count_mutual_links2(Nodes, N_links, row_ptr, col_idx, num_involvements3, num_threads1);

@@ -279,28 +279,24 @@ int cmpfunc (const void * a, const void * b){
 
 void top_n_webpages(int num_webpages, int *num_involvements, int n){
   int *temp1_num_involvements = (int*)malloc(num_webpages*sizeof(int));
-  int *temp2_num_involvements = (int*)malloc(n*sizeof(int));
+  int *temp2_num_involvements = (int*)malloc(num_webpages*sizeof(int));
 
 
 
   for (int i = 0; i < num_webpages; i++){
     temp1_num_involvements[i] = num_involvements[i];
-    //temp2_num_involvements[i] = i+1;
+    temp2_num_involvements[i] = -1;
 
   }
 
-  for (int i = 0; i < n; i++){
-    temp2_num_involvements[i] = 0;
-  }
-
-  //sort_numbers(num_involvements, temp_num_involvements, num_webpages);
   qsort(num_involvements, num_webpages, sizeof(int), cmpfunc);
 
   for (int i = num_webpages - 1; i > num_webpages - 1 - n; i--){
     for (int j = 0; j < num_webpages; j++){
       if (num_involvements[i] == temp1_num_involvements[j]){
-        temp2_num_involvements[i] = j+1;
         temp1_num_involvements[j] = -1;
+        temp2_num_involvements[i] = j+1;
+        break;
       }
     }
 
@@ -321,37 +317,41 @@ void top_n_webpages(int num_webpages, int *num_involvements, int n){
 
 
 void OMP_top_n_webpages(int num_webpages, int *num_involvements, int n, int num_threads){
-  int *temp_num_involvements = (int*)malloc(num_webpages*sizeof(int));
-  int temp1, temp2;
+  int *temp1_num_involvements = (int*)malloc(num_webpages*sizeof(int));
+  int *temp2_num_involvements = (int*)malloc(num_webpages*sizeof(int));
+
+
 
   for (int i = 0; i < num_webpages; i++){
-    temp_num_involvements[i] = i+1;
+    temp1_num_involvements[i] = num_involvements[i];
+    temp2_num_involvements[i] = -1;
   }
 
-  //sort_numbers(num_involvements, temp_num_involvements, num_webpages);
+  qsort(num_involvements, num_webpages, sizeof(int), cmpfunc);
+
   int i;
   #pragma omp parallel for private(i) num_threads(num_threads)
-  for (i = 0; i < num_webpages; i++){
-     for (int j = i + 1; j < num_webpages; j++){
-        if (num_involvements[i] < num_involvements[j]){
-           temp1 = num_involvements[i];
-           temp2 = temp_num_involvements[i];
-           num_involvements[i] = num_involvements[j];
-           temp_num_involvements[i] = temp_num_involvements[j];
-           num_involvements[j] = temp1;
-           temp_num_involvements[j] = temp2;
-        }
-     }
+  for (i = num_webpages - 1; i > num_webpages - 1 - n; i--){
+    for (int j = 0; j < num_webpages; j++){
+      if (num_involvements[i] == temp1_num_involvements[j]){
+        temp1_num_involvements[j] = -1;
+        temp2_num_involvements[i] = j+1;
+        break;
+      }
+    }
+
   }
 
   printf("Webpage   # Involvements \n");
 
-  for (int i = 0; i < n; i++){
-    printf(" %d            %d \n", temp_num_involvements[i], num_involvements[i]);
+  for (int i = num_webpages-1; i > num_webpages-1-n; i--){
+    printf(" %d            %d \n", temp2_num_involvements[i], num_involvements[i]);
     printf("\n");
   }
 
-  free(temp_num_involvements);
+  free(temp1_num_involvements);
+  free(temp2_num_involvements);
+
 
 }
 
