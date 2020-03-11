@@ -285,6 +285,8 @@ void top_n_webpages(int num_webpages, int *num_involvements, int n){
 
   for (int i = 0; i < num_webpages; i++){
     temp1_num_involvements[i] = num_involvements[i];
+    //temp2_num_involvements[i] = i+1;
+
   }
 
   for (int i = 0; i < n; i++){
@@ -294,14 +296,11 @@ void top_n_webpages(int num_webpages, int *num_involvements, int n){
   //sort_numbers(num_involvements, temp_num_involvements, num_webpages);
   qsort(num_involvements, num_webpages, sizeof(int), cmpfunc);
 
-  int temp;
   for (int i = num_webpages - 1; i > num_webpages - 1 - n; i--){
     for (int j = 0; j < num_webpages; j++){
       if (num_involvements[i] == temp1_num_involvements[j]){
-        temp = temp1_num_involvements[i];
-        temp1_num_involvements[j] = temp1_num_involvements[i];
-        temp1_num_involvements[i] = temp;
         temp2_num_involvements[i] = j+1;
+        temp1_num_involvements[j] = -1;
       }
     }
 
