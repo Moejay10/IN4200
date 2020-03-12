@@ -86,6 +86,85 @@ void OMP_top_n_webpages(int num_webpages, int *num_involvements, int n, int num_
 
   free(temp1_num_involvements);
   free(temp2_num_involvements);
+}
+
+
+
+void test_top_n_webpages(char *openmp, int n, int num_threads){
+  /* Function to test read_graph_from_file1
+  using the example illustrated in the home exam. */
+
+  // Hard coding the exact values:
+  int N_exact = 8;
+  int num_involvements_exact[8] = {2, 0, 4, 6, 5, 2, 4, 3};
+  int ordered_num_involvements_exact[8] = {6, 5, 4, 4, 3, 2, 2, 0};
+
+
+  // Provide the parameters for the function:
+  int *num_involvements_test = (int*)malloc(8*sizeof(int));;
+
+
+  // Parameter for counting the number of errors in the extracted matrix
+  int numberofErrors = 0;
+
+  for (int i = 0; i < N_exact; i++){
+    num_involvements_test[i] = num_involvements_exact[i];
+  }
+
+
+
+  if (strcmp(openmp, "no") == 0 )
+  {
+    top_n_webpages(N_exact, num_involvements_test, n);
+
+
+    for (int i = 0; i < N_exact; i++){
+      if (ordered_num_involvements_exact[i] != num_involvements_test[i])
+      {
+        numberofErrors++;
+      }
+    }
+
+    if (numberofErrors > 0)
+    {
+      printf("top_n_webpages has %d errors in num_involvements. \n", numberofErrors);
+    }
+
+    else
+    {
+      printf("top_n_webpages has no errors in num_involvements. \n");
+    }
+
+  }
+
+  else if (strcmp(openmp, "yes") == 0 )
+  {
+    OMP_top_n_webpages(N_exact, num_involvements_test, n, num_threads);
+
+
+    for (int i = 0; i < N_exact; i++){
+      if (ordered_num_involvements_exact[i] != num_involvements_test[i])
+      {
+        numberofErrors++;
+      }
+    }
+
+    if (numberofErrors > 0)
+    {
+      printf("OMP_top_n_webpages has %d errors in num_involvements. \n", numberofErrors);
+    }
+
+    else
+    {
+      printf("OMP_top_n_webpages has no errors in num_involvements. \n");
+    }
+
+  }
+
+  else
+  {
+    printf("No openmp specification parameter was given \n");
+  }
 
 
 }

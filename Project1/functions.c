@@ -102,7 +102,7 @@ void read_graph_from_file_2(char *filename, int *Nodes, int *N_links, int **row_
     *N_links = nnz;
 
     //Allocating memory for vectors
-    //*val = (int*)malloc(*N_links*sizeof(int));
+    // *val = (int*)malloc(*N_links*sizeof(int));
     *col_idx = (int*)malloc(*N_links*sizeof(int));
     *row_ptr = (int*)malloc(N_rows*sizeof(int));
 

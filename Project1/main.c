@@ -43,6 +43,44 @@ int main(int argc, char *argv[]){
   int *col_idx1 = NULL;
 
 
+// ------------------------- TEST PROGRAM ----------------------------//
+
+  printf("TEST PROGRAM PART \n");
+
+  test_read_graph_from_file1();
+  test_read_graph_from_file2();
+  printf("\n");
+
+  char *openmp;
+  openmp = "no";
+  test_count_mutual_links1(openmp, 1);
+  test_count_mutual_links2(openmp, 1);
+
+  printf("\n");
+
+  openmp = "yes";
+  int numberofThreads = 2;
+  test_count_mutual_links1(openmp, numberofThreads);
+  test_count_mutual_links2(openmp, numberofThreads);
+
+  printf("\n");
+
+  openmp = "no";
+  numberofThreads = 1;
+  int n = 8;
+  test_top_n_webpages(openmp, n, numberofThreads);
+
+  printf("\n");
+
+  openmp = "yes";
+  numberofThreads = 2;
+  n = 8;
+  test_top_n_webpages(openmp, n, numberofThreads);
+
+  printf("\n");
+  printf("\n");
+
+
   if (strcmp(filename, "web-NotreDame.txt") == 0 )
   {
     printf("File is to big for read_graph_from_file_1 \n");
@@ -51,7 +89,7 @@ int main(int argc, char *argv[]){
   else{
         // Set up time for clocking the task
         start = clock();
-        read_graph_from_file_1(filename, &Nodes, &table2D); // Do not use to big of a file
+        read_graph_from_file1(filename, &Nodes, &table2D); // Do not use to big of a file
         end = clock();
         timer = (double)(end - start)/CLOCKS_PER_SEC;
 
@@ -104,17 +142,17 @@ int main(int argc, char *argv[]){
 
 
   start = clock();
-  read_graph_from_file_2(filename, &Nodes, &N_links, &row_ptr, &col_idx);
+  read_graph_from_file2(filename, &Nodes, &N_links, &row_ptr, &col_idx);
   end = clock();
 
   timer = (double)(end - start)/CLOCKS_PER_SEC;
 
   printf("Time used for read_graph_from_file_2 is %fs \n", timer);
-  int N_rows = Nodes + 1;
 
 
-  //printVectorToTerminal2(row_ptr, col_idx, N_rows, N_links);
-  //WriteVectortoFile2(row_ptr, col_idx, N_rows, N_links);
+
+  printVectorToTerminal2(row_ptr, col_idx, Nodes + 1, N_links);
+  //WriteVectortoFile2(row_ptr, col_idx, Nodes + 1, N_links);
 
   int Total_involvements1;
   int *num_involvements1 = (int*)malloc(Nodes*sizeof(int));
@@ -153,7 +191,7 @@ int main(int argc, char *argv[]){
   else{
   // Set up time for clocking the task
   start = clock();
-  read_graph_from_file_1(filename, &Nodes1, &table2D_1); // Do not use to big of a file
+  read_graph_from_file1(filename, &Nodes1, &table2D_1); // Do not use to big of a file
   end = clock();
   timer = (double)(end - start)/CLOCKS_PER_SEC;
 
@@ -191,7 +229,7 @@ int main(int argc, char *argv[]){
   printf("OpenMP Parallelisation 2 \n");
 
   start = clock();
-  read_graph_from_file_2(filename, &Nodes1, &N_links1, &row_ptr1, &col_idx1);
+  read_graph_from_file2(filename, &Nodes1, &N_links1, &row_ptr1, &col_idx1);
   end = clock();
 
   timer = (double)(end - start)/CLOCKS_PER_SEC;

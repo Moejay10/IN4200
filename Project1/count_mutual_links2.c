@@ -62,3 +62,112 @@ int OMP_count_mutual_links2(int N, int N_links, int *row_ptr, int *col_idx, int 
 
   return Total_involvements;
 }
+
+
+
+
+
+void test_count_mutual_links2(char *openmp, int num_threads){
+  /* Function to test read_graph_from_file1
+  using the example illustrated in the home exam. */
+
+  // Hard coding the exact values:
+  int N_exact = 8;
+  int N_links_exact = 17;
+  int num_involvements_exact[8] = {2, 0, 4, 6, 5, 2, 4, 3};
+  int Total_involvements_exact = 13;
+  int row_ptr_exact[9] = {0, 1, 4, 5, 6, 9, 12, 14, 17};
+  int col_idx_exact[17] = {6, 0, 2, 3, 0, 1, 2, 3, 6, 3, 4, 7, 4, 7, 4, 5, 6};
+
+  // Provide the parameters for the function:
+  int Total_involvements_test = 0;
+  int *num_involvements_test = (int*)malloc(8*sizeof(int));;
+  int *row_ptr_test = (int*)malloc(9*sizeof(int));
+  int *col_idx_test = (int*)malloc(17*sizeof(int));
+
+  // Parameter for counting the number of errors in the extracted matrix
+  int numberofErrors = 0;
+
+  for (int i = 0; i < N_exact+1; i++){
+    row_ptr_test[i] = row_ptr_exact[i];
+  }
+
+  for (int i = 0; i < N_links_exact; i++){
+    col_idx_test[i] = col_idx_exact[i];
+  }
+
+  if (strcmp(openmp, "no") == 0 )
+  {
+    Total_involvements_test = count_mutual_links2(N_exact, N_links_exact, row_ptr_test, col_idx_test, num_involvements_test);
+
+    if (Total_involvements_exact != Total_involvements_test){
+      printf("The total number of mutual webpage linkage occurences was extracted incorrectly in function count_mutual_links2 \n");
+      printf("Total_involvements_exact is: %d, while the extracted Total_involvements_test is: %d \n", Total_involvements_exact, Total_involvements_test);
+    }
+
+    else
+    {
+      printf("The total number of mutual webpage linkage occurences was extracted correctly in function count_mutual_links2 \n");
+      printf("Total_involvements_exact is: %d, while the extracted Total_involvements_test is: %d \n", Total_involvements_exact, Total_involvements_test);
+    }
+
+    for (int i = 0; i < N_exact; i++){
+      if (num_involvements_exact[i] != num_involvements_test[i])
+      {
+        numberofErrors++;
+      }
+    }
+
+    if (numberofErrors > 0)
+    {
+      printf("count_mutual_links2 has %d errors in num_involvements. \n", numberofErrors);
+    }
+
+    else
+    {
+      printf("count_mutual_links2 has no errors in num_involvements. \n");
+    }
+
+  }
+
+  else if (strcmp(openmp, "yes") == 0 )
+  {
+    Total_involvements_test = OMP_count_mutual_links2(N_exact, N_links_exact, row_ptr_test, col_idx_test, num_involvements_test, num_threads);
+
+    if (Total_involvements_exact != Total_involvements_test){
+      printf("The total number of mutual webpage linkage occurences was extracted incorrectly in function OMP_count_mutual_links2 \n");
+      printf("Total_involvements_exact is: %d, while the extracted Total_involvements_test is: %d \n", Total_involvements_exact, Total_involvements_test);
+    }
+
+    else
+    {
+      printf("The total number of mutual webpage linkage occurences was extracted correctly in function OMP_count_mutual_links2 \n");
+      printf("Total_involvements_exact is: %d, while the extracted Total_involvements_test is: %d \n", Total_involvements_exact, Total_involvements_test);
+    }
+
+    for (int i = 0; i < N_exact; i++){
+      if (num_involvements_exact[i] != num_involvements_test[i])
+      {
+        numberofErrors++;
+      }
+    }
+
+    if (numberofErrors > 0)
+    {
+      printf("OMP_count_mutual_links2 has %d errors in num_involvements. \n", numberofErrors);
+    }
+
+    else
+    {
+      printf("OMP_count_mutual_links2 has no errors in num_involvements. \n");
+    }
+
+  }
+
+  else
+  {
+    printf("No openmp specification parameter was given \n");
+  }
+
+
+}
