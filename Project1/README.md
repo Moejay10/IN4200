@@ -1,7 +1,7 @@
 # Web graph
 
 The code reads a .txt file which must be formatted in the following way:
-'''
+```
 # Directed graph (each unordered pair of nodes is saved once): web-NotreDame.txt
 # University of Notre Dame web graph from 1999 by Albert, Jeong and Barabasi
 # Nodes: 325729 Edges: 1497134
@@ -9,7 +9,7 @@ The code reads a .txt file which must be formatted in the following way:
 0	0
 0	1
 0	2
-'''
+```
 
 * The first two lines both start with the # symbol and contain free text
 (listing the name of the data file, authors etc.);
@@ -29,11 +29,11 @@ should be excluded (not used in the data storage later);
 # Compilation
 
 Compile the code by:
-'''
+```
 $ make all
-'''
+```
 
 And execute the program by:
-'''
-$ ./program.exe filename.txt 
-'''
+```
+$ ./program.exe filename.txt
+```
