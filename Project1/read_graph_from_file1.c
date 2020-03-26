@@ -53,6 +53,7 @@ void read_graph_from_file1(char *filename, int *Nodes, char ***table2D){
 void test_read_graph_from_file1(){
   /* Function to test read_graph_from_file1
   using the example illustrated in the home exam. */
+  printf("\n Testing read_graph_from_file1 \n");
 
   // Hard coding the exact values:
   int N_exact = 8;

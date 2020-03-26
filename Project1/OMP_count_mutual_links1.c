@@ -3,14 +3,14 @@
 #include <math.h>
 #include <string.h>
 #include <time.h>
+#include <omp.h> // OpenMP
 
 #include "functions.h"
 
 
-int count_mutual_links1(int N, char **table2D, int *num_involvements){
+int OMP_count_mutual_links1(int N, char **table2D, int *num_involvements, int num_threads){
 
   int *temp_num_involvements = (int*)malloc(N*sizeof(int));
-
 
   for (int i = 0; i < N; i++){
     num_involvements[i] = 0;
@@ -19,16 +19,20 @@ int count_mutual_links1(int N, char **table2D, int *num_involvements){
 
   int Total_involvements = 0;
   int temp;
-  for (int i = 0; i < N; i++){
-    temp = 0;
-    for (int j = 0; j < N; j++){
-      temp += table2D[i][j];
-      temp_num_involvements[j] = table2D[i][j];
-    }
 
-    counter(temp_num_involvements, num_involvements, temp, N);
+  #pragma omp parallel for private(temp) reduction(+:Total_involvements, num_involvements[:N], temp_num_involvements[:N]) num_threads(num_threads)
+  for (int i = 0; i < N; i++)
+  {
+  temp = 0;
+      for (int j = 0; j < N; j++){
+        temp += table2D[i][j];
+        temp_num_involvements[j] = table2D[i][j];
+      }
 
-    Total_involvements += factorial(temp);
+      counter(temp_num_involvements, num_involvements, temp, N);
+
+
+      Total_involvements += factorial(temp);
   }
 
   free(temp_num_involvements);
@@ -38,7 +42,7 @@ int count_mutual_links1(int N, char **table2D, int *num_involvements){
 
 
 
-void test_count_mutual_links1(){
+void test_OMP_count_mutual_links1(int num_threads){
   /* Function to test count_mutual_links1
   using the example illustrated in the home exam. */
 
@@ -74,18 +78,20 @@ void test_count_mutual_links1(){
     }
   }
 
-  printf("\n Testing count_mutual_links1 \n");
 
-  Total_involvements_test = count_mutual_links1(N_exact, table2D, num_involvements_test);
+
+  printf("\n Testing OMP_count_mutual_links1 \n");
+
+  Total_involvements_test = OMP_count_mutual_links1(N_exact, table2D, num_involvements_test, num_threads);
 
   if (Total_involvements_exact != Total_involvements_test){
-    printf("The total number of mutual webpage linkage occurences was extracted incorrectly in function count_mutual_links1 \n");
+    printf("The total number of mutual webpage linkage occurences was extracted incorrectly in function OMP_count_mutual_links1 \n");
     printf("Total_involvements_exact is: %d, while the extracted Total_involvements_test is: %d \n", Total_involvements_exact, Total_involvements_test);
   }
 
   else
   {
-    printf("The total number of mutual webpage linkage occurences was extracted correctly in function count_mutual_links1 \n");
+    printf("The total number of mutual webpage linkage occurences was extracted correctly in function OMP_count_mutual_links1 \n");
     printf("Total_involvements_exact is: %d, while the extracted Total_involvements_test is: %d \n", Total_involvements_exact, Total_involvements_test);
   }
 
@@ -98,12 +104,12 @@ void test_count_mutual_links1(){
 
   if (numberofErrors > 0)
   {
-    printf("count_mutual_links1 has %d errors in num_involvements. \n", numberofErrors);
+    printf("OMP_count_mutual_links1 has %d errors in num_involvements. \n", numberofErrors);
   }
 
   else
   {
-    printf("count_mutual_links1 has no errors in num_involvements. \n");
+    printf("OMP_count_mutual_links1 has no errors in num_involvements. \n");
   }
 
 }

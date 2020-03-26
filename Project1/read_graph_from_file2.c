@@ -110,8 +110,10 @@ void read_graph_from_file2(char *filename, int *Nodes, int *N_links, int **row_p
 
 
 void test_read_graph_from_file2(){
-  /* Function to test read_graph_from_file1
+  /* Function to test read_graph_from_file2
   using the example illustrated in the home exam. */
+
+  printf("\n Testing read_graph_from_file2 \n");
 
   // Hard coding the exact values:
   int N_exact = 8;
