@@ -9,12 +9,15 @@
 
 void read_graph_from_file1(char *filename, int *Nodes, char ***table2D){
 /// -----------------------------------------------------------
-// # Read file and extract data
+// # Read webgraph files and extract data
 // Input:
 // * filename:  Holding the name of the web graph
 // * Nodes:     Empty parameter
+// *** table2D:     Empty parameter
+
 
 /// -----------------------------------------------------------
+    int fscan_return; // To get rid of warnings from fscan not using values
     int row = 0;
     int col = 0;
     int Edges = 0;
@@ -26,26 +29,25 @@ void read_graph_from_file1(char *filename, int *Nodes, char ***table2D){
         exit(0);
     }
 
-    fscanf(datafile, "%*[^\n]\n");                 // Skip lines to relevant data
-    fscanf(datafile, "%*[^\n]\n");
-    fscanf(datafile, "# Nodes: %d Edges: %d\n", &*Nodes, &Edges); // Extract data
-    //fscanf(datafile, "# Nodes: %d\n", &*Nodes); // Extract data
-    fscanf(datafile, "%*[^\n]\n");
+    fscan_return = fscanf(datafile, "%*[^\n]\n");                 // Skip lines to relevant data
+    fscan_return = fscanf(datafile, "%*[^\n]\n");
+    fscan_return = fscanf(datafile, "# Nodes: %d Edges: %d\n", &*Nodes, &Edges); // Extract Nodes and Edges
+    fscan_return = fscanf(datafile, "%*[^\n]\n");
 
     int N = *Nodes;
 
-    alloc2DMatrix(table2D, N);
-    construct2DMatrix(table2D, N);
+    alloc2DMatrix(table2D, N); // Allocating space for table2D
+    construct2DMatrix(table2D, N); // Filling table2D with zeros
 
     while (fscanf(datafile, "%d %d", &col, &row) != EOF){ // Scan to end of file
 
         if (row == col){
           continue;                                       // Assure we skip self links
         }
-        (*table2D)[row][col] = 1;
+        (*table2D)[row][col] = 1;                         // Managing the direct links
     }
 
-    fclose (datafile);
+    fclose (datafile);                                    // Closing file
 }
 
 
@@ -112,5 +114,7 @@ void test_read_graph_from_file1(){
       printf("read_graph_from_file1 has no errors in the matrix. \n");
     }
   }
+
+  free2D(table2D);
 
 }

@@ -9,9 +9,25 @@
 
 
 int OMP_count_mutual_links1(int N, char **table2D, int *num_involvements, int num_threads){
+  /// -----------------------------------------------------------
+  // # Counts the total number of mutual webpage linkages occurences
+  // and the number of involvements per webpage as outbound
+  // Parallelized version of count_mutual_links1
 
+  // Input:
+  // * Nodes:             Holds the number of nodes for the webgraph found in read_graph_from_file1
+  // ** table2D:          The corresponding 2D table for the webgraph found in read_graph_from_file1
+  // * num_involvements:  Empty parameter
+  //   num_threads:       Holds the number of threads
+
+  // Output:
+  // Total_involvements:  Returns the total number of mutual webpage linkages occurences
+  /// -----------------------------------------------------------
+
+  // Allocating memory for vectors
   int *temp_num_involvements = (int*)malloc(N*sizeof(int));
 
+  // Filing the pointers with zeros
   for (int i = 0; i < N; i++){
     num_involvements[i] = 0;
     temp_num_involvements[i] = 0;
@@ -25,14 +41,14 @@ int OMP_count_mutual_links1(int N, char **table2D, int *num_involvements, int nu
   {
   temp = 0;
       for (int j = 0; j < N; j++){
-        temp += table2D[i][j];
-        temp_num_involvements[j] = table2D[i][j];
+        temp += table2D[i][j];                    // Adding all the nnz values in each row
+        temp_num_involvements[j] = table2D[i][j]; // Assigning all the nnz values in each row
       }
-
+      // Function found in functions.c
       counter(temp_num_involvements, num_involvements, temp, N);
 
-
-      Total_involvements += factorial(temp);
+      Total_involvements += factorial(temp);      // Finds the total number of
+                                                  // mutual linkages for each row
   }
 
   free(temp_num_involvements);
@@ -43,7 +59,7 @@ int OMP_count_mutual_links1(int N, char **table2D, int *num_involvements, int nu
 
 
 void test_OMP_count_mutual_links1(int num_threads){
-  /* Function to test count_mutual_links1
+  /* Function to test OMP_count_mutual_links1
   using the example illustrated in the home exam. */
 
   // Hard coding the exact values:
@@ -70,6 +86,7 @@ void test_OMP_count_mutual_links1(int num_threads){
   // Parameter for counting the number of errors in the extracted matrix
   int numberofErrors = 0;
 
+  // Allocates memory
   alloc2DMatrix(&table2D, N_exact);
 
   for (int i = 0; i < N_exact; i++){
@@ -111,5 +128,8 @@ void test_OMP_count_mutual_links1(int num_threads){
   {
     printf("OMP_count_mutual_links1 has no errors in num_involvements. \n");
   }
+  
+  free2D(table2D);
+  free(num_involvements_test);
 
 }

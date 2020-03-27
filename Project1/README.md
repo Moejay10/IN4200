@@ -33,7 +33,12 @@ Compile the code by:
 $ make all
 ```
 
-And execute the program by:
+You execute the serialized program by:
 ```
 $ ./program.exe filename.txt
+```
+
+And you execute the parallelized program by:
+```
+$ ./omp_program.exe filename.txt num_threads
 ```

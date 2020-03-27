@@ -6,39 +6,39 @@
 
 #include "functions.h"
 
-
+// Allocates memory for a NxN matrix
 void alloc2DMatrix(char ***A, int N){
-
   *A = malloc(N * sizeof *A);
     (*A)[0] = malloc(N*N * sizeof (*A)[0]);
     if (!(*A)[0] || !*A){
         // Allocation failed.
         printf("Allocation failed\n");
     }
-
     for (size_t i = 1; i < N; i++) {
         (*A)[i] = &((*A)[0][i*N]);
     }
 }
 
+// Allocates memory for a vector
 void allocVector(int **a, int N){
     *a = malloc(N * sizeof *a);
     }
 
 
 
-// Free pointers allocated in alloc2D.
+// Frees double pointers.
 void free2D(char **A){
     free(A[0]);
     free(A);
 }
 
+// Frees single pointers.
 void free1D(int *a){
     free(a);
 }
 
+// Fills a NxN matrix with zeros
 void construct2DMatrix(char ***A, int N){
-
   for (int i = 0; i < N; i++){
     for (int j = 0; j < N; j++){
       (*A)[i][j] = 0;
@@ -47,7 +47,7 @@ void construct2DMatrix(char ***A, int N){
 
 }
 
-// Print matrix values in a file.
+// Prints NxN matrix values in a file.
 void WriteMatrixtoFile(char **A, int N){
   FILE *fp;
   fp = fopen("Table2D", "w");
@@ -76,7 +76,7 @@ void WriteVectortoFile(int *a, int *b, int N){
 }
 
 
-// Print vectors values in a file.
+// Prints two vectors in a file.
 void WriteVectortoFile2(int *a, int *b, int N_rows, int N_links){
   FILE *fp;
   fp = fopen("CRS", "w");
@@ -95,7 +95,7 @@ void WriteVectortoFile2(int *a, int *b, int N_rows, int N_links){
 
 }
 
-// Print matrix values.
+// Print NxN matrix values to terminal.
 void printMatrixToTerminal(char **A, int N){
   for (int i = 0; i < N; i++){
     for (int j = 0; j < N; j++){
@@ -114,7 +114,7 @@ void printVectorToTerminal(int *a, int N){
   }
 }
 
-// Print vectors values.
+// Prints two vectors to the terminal.
 void printVectorToTerminal2(int *a, int *b, int N_rows, int N_links){
   printf("row \n");
   for (int i = 0; i < N_rows; i++){
@@ -128,7 +128,6 @@ void printVectorToTerminal2(int *a, int *b, int N_rows, int N_links){
     printf(" %d ", b[i]);
     printf("\n");
   }
-
 }
 
 
@@ -137,6 +136,7 @@ void printVectorToTerminal2(int *a, int *b, int N_rows, int N_links){
 
 // Function to sort character array b
 // according to the order defined by a
+// where "a" n-largest values get sorted
 void sort_numbers(int *a, int *b, int n, int N){
    int temp1, temp2;
    for (int i = 0; i < n; i++){
@@ -154,8 +154,8 @@ void sort_numbers(int *a, int *b, int n, int N){
 }
 
 
+// Calculates the 2 element combination of a element set consisting of n
 int factorial(int n){
-
   if (n < 2){
     return 0;
   }
@@ -169,12 +169,13 @@ int factorial(int n){
       term1 *= i;
     }
 
-
     result = term1/r;
     return result;
   }
 }
 
+// Counts the number of mutual webpage linkage occurences for each row
+// and adds that to each webpage that contributed to the linkage
 void counter(int *temp_num_involvements, int *num_involvements, int temp, int N){
   for (int i = 0; i < N; i++){
     if (temp_num_involvements[i] > 0){

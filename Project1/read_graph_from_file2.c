@@ -10,14 +10,17 @@
 
 void read_graph_from_file2(char *filename, int *Nodes, int *N_links, int **row_ptr, int **col_idx){
 /// -----------------------------------------------------------
-// # Read file and extract data
+// # Read webgraph files and extract data
 // Input:
 // * filename:  Holding the name of the web graph
 // * Nodes:     Empty parameter
-// * Edges:     Empty parameter
+// * N_links:     Empty parameter
+// ** row_ptr:     Empty parameter
+// ** col_idx:     Empty parameter
+
 
 /// -----------------------------------------------------------
-
+    int fscan_return; // To get rid of warnings from fscan not using values
     int row = 0;
     int col = 0;
     int nnz = 0;
@@ -31,10 +34,10 @@ void read_graph_from_file2(char *filename, int *Nodes, int *N_links, int **row_p
         exit(0);
     }
 
-    fscanf(datafile, "%*[^\n]\n");                 // Skip lines to relevant data
-    fscanf(datafile, "%*[^\n]\n");
-    fscanf(datafile, "# Nodes: %d Edges: %d\n", &*Nodes, &*N_links); // Extract data
-    fscanf(datafile, "%*[^\n]\n");
+    fscan_return = fscanf(datafile, "%*[^\n]\n");                 // Skip lines to relevant data
+    fscan_return = fscanf(datafile, "%*[^\n]\n");
+    fscan_return = fscanf(datafile, "# Nodes: %d Edges: %d\n", &*Nodes, &*N_links); // Extract Nodes and Edges
+    fscan_return = fscanf(datafile, "%*[^\n]\n");
 
     int N_rows = *Nodes +1;
 
@@ -51,59 +54,64 @@ void read_graph_from_file2(char *filename, int *Nodes, int *N_links, int **row_p
 
         nnz++;                          // Number of valid links
       }
-      N_selflinks++;
+      N_selflinks++;                    // Number of selflinks
     }
 
 
     fclose (datafile);
 
-    *N_links = nnz;
+    *N_links = nnz;                     // Extracting only the valid links
 
     //Allocating memory for vectors
     //*val = (int*)malloc(*N_links*sizeof(int));
     *col_idx = (int*)malloc(*N_links*sizeof(int));
     *row_ptr = (int*)malloc(N_rows*sizeof(int));
 
-
+    // Filling row_ptr with zeros
     for (int i = 0; i < N_rows; i++){
       (*row_ptr)[i] = 0;
     }
 
+    // Finding out how many non-zeros values that are on each row
     for (int i = 0; i < *N_links; i++){
-    (*row_ptr)[row_indices[i]]++;
-  }
+      (*row_ptr)[row_indices[i]]++;
+    }
 
-  int sum = 0;
-  int temp;
-  for (int i = 0; i < N_rows; i++){
-    temp = (*row_ptr)[i];
-    (*row_ptr)[i] = sum;
-    sum += temp;
-  }
+    int sum = 0;
+    int tmp;
+    // Adding the non-zeros values that are on each row
+    for (int i = 0; i < N_rows; i++){
+      tmp = (*row_ptr)[i];
+      (*row_ptr)[i] = sum;
+      sum += tmp;
+    }
 
-  (*row_ptr)[N_rows] = *N_links;
+    // Assigning the last value as the number of links
+    (*row_ptr)[N_rows] = *N_links;
 
-  int rows, dest;
-  for (int i = 0; i < *N_links; i++){
-    rows = row_indices[i];
-    dest = (*row_ptr)[rows];
+    int rows, cols;
+    // Linking the col_idx to the row_ptr
+    for (int i = 0; i < *N_links; i++){
+      rows = row_indices[i];
+      cols = (*row_ptr)[rows];
 
-    (*col_idx)[dest] = colum_indices[i];
-    //(*val)[dest] = vals[i];
+      (*col_idx)[cols] = colum_indices[i];
+      //(*val)[cols] = vals[i];
 
-    (*row_ptr)[rows]++;
-  }
-
-  int last = 0;
-  for (int i = 0; i < N_rows; i++){
-    temp = (*row_ptr)[i];
-    (*row_ptr)[i] = last;
-    last = temp;
-  }
+      (*row_ptr)[rows]++;
+    }
 
 
-  free(colum_indices);
-  free(row_indices);
+    sum = 0;
+    // Rearranging the row_ptr so it starts with a zero as convention says
+    for (int i = 0; i < N_rows; i++){
+      tmp = (*row_ptr)[i];
+      (*row_ptr)[i] = sum;
+      sum = tmp;
+    }
+
+    free(colum_indices);
+    free(row_indices);
 
 }
 
@@ -124,8 +132,8 @@ void test_read_graph_from_file2(){
   // Provide the parameters for the function:
   int N_test = 0;
   int N_links_test = 0;
-  int *row_ptr_test = (int*)malloc(9*sizeof(int));
-  int *col_idx_test = (int*)malloc(17*sizeof(int));
+  int *row_ptr_test = NULL;
+  int *col_idx_test = NULL;
   char *filename;
   filename = "8nodes_graph.txt";
   read_graph_from_file2(filename, &N_test, &N_links_test, &row_ptr_test, &col_idx_test);
@@ -176,5 +184,8 @@ void test_read_graph_from_file2(){
       printf("read_graph_from_file1 has no errors in the vectors row_ptr or col_idx. \n");
     }
   }
+
+  free(row_ptr_test);
+  free(col_idx_test);
 
 }

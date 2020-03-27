@@ -23,19 +23,16 @@ int main(int argc, char *argv[]){
         printf("Filename required.\n");
         exit(0);
   }
+
   char* filename = argv[1];
 
-  int Nodes = 0;
-  int Nodes1 = 0;
-  int N_links1 = 0;
-  int n = 8;
   clock_t start, end;
-  double timer;
+  double timer[6];
+  for (int i = 0; i < 6; i++){
+    timer[i] = 0;
+  }
 
-  char **table2D;
-
-  int *row_ptr = NULL;
-  int *col_idx = NULL;
+  int runs = 10; // Number of time running the program to find the average time
 
 
 // ------------------------- TEST PROGRAM ----------------------------//
@@ -58,82 +55,119 @@ int main(int argc, char *argv[]){
   // ------------------------- MAIN PROGRAM ----------------------------//
   printf("\n MAIN PROGRAM PART \n");
   printf("\n");
+
+
   // ------------------------- Serialized version ----------------------------//
   printf("Serialized version of the code running \n \n");
 
-  // Data in table format
-  if (strcmp(filename, "web-NotreDame.txt") == 0 )
-  {
-    printf("File is to big for read_graph_from_file_1 \n");
-  }
+  for (int i = 0; i < runs; i++){
 
-  else{
-        // Set up time for clocking the task
-        start = clock();
-        read_graph_from_file1(filename, &Nodes, &table2D); // Do not use to big of a file
-        end = clock();
-        timer = (double)(end - start)/CLOCKS_PER_SEC;
+    // Defining variables
+    int Nodes = 0;
+    int Nodes1 = 0;
+    int N_links1 = 0;
+    int n = 8;
 
-        printf("Time used for read_graph_from_file_1 is %fs \n", timer);
+    char **table2D;
 
-        int Total_involvements1;
-        int *num_involvements1 = (int*)malloc(Nodes*sizeof(int));
+    int *row_ptr = NULL;
+    int *col_idx = NULL;
 
-        start = clock();
-        Total_involvements1 = count_mutual_links1(Nodes, table2D, num_involvements1);
-        end = clock();
+    // Data in table format
 
-        timer = (double)(end - start)/CLOCKS_PER_SEC;
-        printf("Time used for count_mutual_links1 is %fs \n", timer);
-
-
-        printf("Total number of mutual web linkage are %d \n", Total_involvements1);
-
-        start = clock();
-        top_n_webpages(Nodes, num_involvements1, n);
-        end = clock();
-
-        timer = (double)(end - start)/CLOCKS_PER_SEC;
-        printf("Time used for top_n_webpages is %fs \n", timer);
-
-        free(num_involvements1);
-        free2D(table2D);
+    if (strcmp(filename, "web-NotreDame.txt") == 0 )
+    {
+      printf("File is to big for read_graph_from_file_1 \n");
     }
 
+    else{
+          // Set up average time for clocking the task
+          start = clock();
+          read_graph_from_file1(filename, &Nodes, &table2D); // Do not use to big of a file
+          end = clock();
+          timer[0] += (double)(end - start)/CLOCKS_PER_SEC;
 
-    printf("\n");
+          if (i == runs - 1){
+            timer[0] /= runs;
+            printf("The average time used for read_graph_from_file_1 is %fs \n", timer[0]);
+          }
 
-    // Data in CRS format
-    start = clock();
-    read_graph_from_file2(filename, &Nodes1, &N_links1, &row_ptr, &col_idx);
-    end = clock();
 
-    timer = (double)(end - start)/CLOCKS_PER_SEC;
+          int Total_involvements1;
+          int *num_involvements1 = (int*)malloc(Nodes*sizeof(int));
 
-    printf("Time used for read_graph_from_file_2 is %fs \n", timer);
+          start = clock();
+          Total_involvements1 = count_mutual_links1(Nodes, table2D, num_involvements1);
+          end = clock();
+          timer[1] += (double)(end - start)/CLOCKS_PER_SEC;
 
-    int Total_involvements2;
-    int *num_involvements2 = (int*)malloc(Nodes1*sizeof(int));
+          if (i == runs - 1){
+            timer[1] /= runs;
+            printf("The average time used for count_mutual_links1 is %fs \n", timer[1]);
 
-    start = clock();
-    Total_involvements2 = count_mutual_links2(Nodes1, N_links1, row_ptr, col_idx, num_involvements2);
-    end = clock();
+            printf("Total number of mutual web linkage are %d \n", Total_involvements1);
+          }
 
-    timer = (double)(end - start)/CLOCKS_PER_SEC;
-    printf("Time used for count_mutual_links2 is %fs \n", timer);
 
-    printf("Total number of mutual web linkage are %d \n", Total_involvements2);
 
-    start = clock();
-    top_n_webpages(Nodes1, num_involvements2, n);
-    end = clock();
+          start = clock();
+          top_n_webpages(Nodes, num_involvements1, n);
+          end = clock();
+          timer[2] += (double)(end - start)/CLOCKS_PER_SEC;
 
-    timer = (double)(end - start)/CLOCKS_PER_SEC;
-    printf("Time used for top_n_webpages is %fs \n", timer);
+          if (i == runs - 1){
+            timer[2] /= runs;
+            printf("The average time used for top_n_webpages is %fs \n", timer[2]);
+          }
 
-    free(num_involvements2);
-    free(col_idx);
-    free(row_ptr);
+          free(num_involvements1);
+          free2D(table2D);
+      }
+
+
+      printf("\n");
+
+      // Data in CRS format
+      start = clock();
+      read_graph_from_file2(filename, &Nodes1, &N_links1, &row_ptr, &col_idx);
+      end = clock();
+      timer[3] += (double)(end - start)/CLOCKS_PER_SEC;
+
+      if (i == runs - 1){
+        timer[3] /= runs;
+        printf("The average time used for read_graph_from_file_2 is %fs \n", timer[3]);
+      }
+
+      int Total_involvements2;
+      int *num_involvements2 = (int*)malloc(Nodes1*sizeof(int));
+
+      start = clock();
+      Total_involvements2 = count_mutual_links2(Nodes1, N_links1, row_ptr, col_idx, num_involvements2);
+      end = clock();
+      timer[4] += (double)(end - start)/CLOCKS_PER_SEC;
+
+      if (i == runs - 1){
+        timer[4] /= runs;
+        printf("The average time used for count_mutual_links2 is %fs \n", timer[4]);
+        printf("Total number of mutual web linkage are %d \n", Total_involvements2);
+      }
+
+
+      start = clock();
+      top_n_webpages(Nodes1, num_involvements2, n);
+      end = clock();
+      timer[5] += (double)(end - start)/CLOCKS_PER_SEC;
+
+      if (i == runs - 1){
+        timer[5] /= runs;
+        printf("The average time used for top_n_webpages is %fs \n", timer[5]);
+      }
+
+      free(num_involvements2);
+      free(row_ptr);
+      free(col_idx);
+    }
+
 
   return 0;
 }

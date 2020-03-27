@@ -8,10 +8,23 @@
 
 
 int count_mutual_links1(int N, char **table2D, int *num_involvements){
+  /// -----------------------------------------------------------
+  // # Counts the total number of mutual webpage linkages occurences
+  // and the number of involvements per webpage as outbound
 
+  // Input:
+  // * Nodes:             Holds the number of nodes for the webgraph found in read_graph_from_file1
+  // ** table2D:          The corresponding 2D table for the webgraph found in read_graph_from_file1
+  // * num_involvements:  Empty parameter
+
+  // Output:
+  // Total_involvements:  Returns the total number of mutual webpage linkages occurences
+  /// -----------------------------------------------------------
+
+  // Allocating memory for vectors
   int *temp_num_involvements = (int*)malloc(N*sizeof(int));
 
-
+  // Filing the pointers with zeros
   for (int i = 0; i < N; i++){
     num_involvements[i] = 0;
     temp_num_involvements[i] = 0;
@@ -22,13 +35,15 @@ int count_mutual_links1(int N, char **table2D, int *num_involvements){
   for (int i = 0; i < N; i++){
     temp = 0;
     for (int j = 0; j < N; j++){
-      temp += table2D[i][j];
-      temp_num_involvements[j] = table2D[i][j];
+      temp += table2D[i][j];                    // Adding all the nnz values in each row
+      temp_num_involvements[j] = table2D[i][j]; // Assigning all the nnz values in each row
     }
 
+    // Functions found in functions.c
     counter(temp_num_involvements, num_involvements, temp, N);
 
-    Total_involvements += factorial(temp);
+    Total_involvements += factorial(temp);      // Finds the total number of
+                                                // mutual linkages for each row
   }
 
   free(temp_num_involvements);
@@ -105,5 +120,8 @@ void test_count_mutual_links1(){
   {
     printf("count_mutual_links1 has no errors in num_involvements. \n");
   }
+
+  free2D(table2D);
+  free(num_involvements_test);
 
 }
