@@ -161,12 +161,15 @@ int main(int argc, char *argv[]){
       if (i == runs - 1){
         timer[5] /= runs;
         printf("The average time used for top_n_webpages is %fs \n", timer[5]);
+        WriteVectortoFile(timer, 6, 0);
       }
 
       free(num_involvements2);
       free(row_ptr);
       free(col_idx);
     }
+
+
 
 
   return 0;

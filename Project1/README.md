@@ -42,3 +42,4 @@ And you execute the parallelized program by:
 ```
 $ ./omp_program.exe filename.txt num_threads
 ```
+Where the last command line "num_threads" is the number of threads to use for parallel regions.  

@@ -162,12 +162,14 @@ int main(int argc, char *argv[]){
     if (i == runs - 1){
       timer[5] /= runs;
       printf("The average time used for OMP_top_n_webpages is %fs \n", timer[5]);
+      WriteVectortoFile(timer, 6, num_threads);
     }
 
     free(num_involvements2);
     free(col_idx);
     free(row_ptr);
   }
+
 
 
   return 0;

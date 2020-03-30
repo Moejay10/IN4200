@@ -15,7 +15,7 @@ void free2D(char **A);
 void free1D(int *a);
 
 void WriteMatrixtoFile(char **A, int N);
-void WriteVectortoFile(int *a, int *b, int N);
+void WriteVectortoFile(double *a, int N, int num_threads);
 void WriteVectortoFile2(int *a, int *b, int N_rows, int N_links);
 
 

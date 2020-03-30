@@ -62,14 +62,15 @@ void WriteMatrixtoFile(char **A, int N){
 }
 
 // Print vectors values in a file.
-void WriteVectortoFile(int *a, int *b, int N){
+void WriteVectortoFile(double *a, int N, int num_threads){
   FILE *fp;
-  fp = fopen("CRS", "w");
-  fprintf(fp, " row  col \n");
+  char filename[100];
+  snprintf(filename, sizeof(filename), "Python/Results/Data/Time%d", num_threads);
+  fp = fopen(filename, "w");
+  fprintf(fp, "Time\n");
 
   for (int i = 0; i < N; i++){
-      fprintf(fp, "  %d  ", a[i]);
-      fprintf(fp, "  %d  ", b[i]);
+      fprintf(fp, "%f", a[i]);
       fprintf(fp, "\n");
   }
   fclose(fp);
