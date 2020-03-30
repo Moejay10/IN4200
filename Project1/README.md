@@ -43,3 +43,8 @@ And you execute the parallelized program by:
 $ ./omp_program.exe filename.txt num_threads
 ```
 Where the last command line "num_threads" is the number of threads to use for parallel regions.  
+
+# References
+
+https://bisqwit.iki.fi/story/howto/openmp/
+https://www.uio.no/studier/emner/matnat/ifi/IN3200/v20/teaching-material/in3200_in4200_home_exam1_v20.pdf
