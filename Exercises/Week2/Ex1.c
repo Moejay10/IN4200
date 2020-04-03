@@ -76,7 +76,7 @@ int main(int narg, char **argv) {
 
     start = clock();
     fread(fromfile, sizeof(double), n, binfile);
-    bin_write_timer = clock() - start;
+    bin_read_timer = clock() - start;
 
     fclose(binfile);
     free(fromfile);

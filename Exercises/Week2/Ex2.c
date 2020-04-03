@@ -4,7 +4,6 @@
 int main(int argc, const char * argv[])
 {
     /* Create a place to store our results */
-    int result;
 
     /* The number of indices in the arrays */
     int n = 20;
