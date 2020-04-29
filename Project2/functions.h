@@ -14,19 +14,12 @@ void construct2DMatrix(int ***A, int M, int N);
 void free2D(int **A);
 void free1D(int *a);
 
-void WriteMatrixtoFile(char **A, int N);
-void WriteVectortoFile(double *a, int N, int num_threads);
-void WriteVectortoFile2(int *a, int *b, int N_rows, int N_links);
 
-
-void printMatrixToTerminal(char **A, int N);
+void printMatrixToTerminal(int **A, int M, int N);
 void printVectorToTerminal(int *a, int N);
 void printVectorToTerminal2(int *a, int *b, int N_rows, int N_links);
 
 
-void sort_numbers(int *a, int *b, int n, int N);
-int factorial(int n);
-void counter(int *temp_num_involvements, int *num_involvements, int temp, int N);
 
 
 #endif // FUNCTIONS_H
