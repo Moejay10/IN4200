@@ -9,10 +9,13 @@
 
 const int MAX_STRING = 100;
 
-#define idx2(i,j) (i*n_cols[myrank] + j)
+
 
 // Used to index local copies of the data in matrix A ex. 4.
 #define idx(i,j) (i*N + j)
+#define idx2(i,j) (i*n_cols[my_rank] + j)
+#define idx3(i,j) (i + j*M)
+
 
 
 int MPI_count_friends_of_ten(int M, int N, int** v){
@@ -28,46 +31,64 @@ int MPI_count_friends_of_ten(int M, int N, int** v){
 
   // Calculate displacements and number of rows for each process.
   int *n_rows = malloc(numprocs*sizeof *n_rows);
+  int *n_cols = malloc(numprocs*sizeof *n_cols);
 
   // Used when scattering A.
-  int *sendcounts = malloc(numprocs*sizeof *sendcounts);
-  int *Sdispls = malloc(numprocs*sizeof *Sdispls);
+  int *sendrows = malloc(numprocs*sizeof *sendrows);
+  int *sendcols = malloc(numprocs*sizeof *sendcols);
 
-  // Used when gathering y.
-  int *Gdispls = malloc(numprocs*sizeof *Gdispls);
-  Sdispls[0] = 0;
-  Gdispls[0] = 0;
+  int *rowdispls = malloc(numprocs*sizeof *rowdispls);
+  int *coldispls = malloc(numprocs*sizeof *coldispls);
+
+  rowdispls[0] = 0;
+  coldispls[0] = 0;
 
   int rows = N/numprocs;
-  int remainder = N%numprocs;
+  int remainder_row = N%numprocs;
 
-
+  int cols = M/numprocs;
+  int remainder_col = M%numprocs;
 
   // Last remainder processes gets an extra row.
   for (int rank = 0; rank < numprocs-1; rank++) {
-      n_rows[rank] = rows + ((rank >= (numprocs - remainder)) ? 1:0);
-      sendcounts[rank] = n_rows[rank]*N;
-      Sdispls[rank+1] = Sdispls[rank] + sendcounts[rank];
-      Gdispls[rank+1] = Gdispls[rank] + n_rows[rank];
-  }
-  n_rows[numprocs-1] = rows + ((numprocs-1) >= (numprocs - remainder) ? 1:0);
+      n_rows[rank] = rows + ((rank >= (numprocs - remainder_row)) ? 1:0);
+      n_cols[rank] = cols + ((rank >= (numprocs - remainder_col)) ? 1:0);
 
-  sendcounts[numprocs-1] = n_rows[numprocs-1]*N;
+      sendrows[rank] = n_rows[rank]*N;
+      sendcols[rank] = n_cols[rank]*M;
+
+      rowdispls[rank+1] = rowdispls[rank] + sendrows[rank];
+      coldispls[rank+1] = coldispls[rank] + sendcols[rank];
+
+  }
+  n_rows[numprocs-1] = rows + ((numprocs-1) >= (numprocs - remainder_row) ? 1:0);
+  n_cols[numprocs-1] = cols + ((numprocs-1) >= (numprocs - remainder_col) ? 1:0);
+
+  sendrows[numprocs-1] = n_rows[numprocs-1]*N;
+  sendcols[numprocs-1] = n_cols[numprocs-1]*M;
+
 
   // Allocate local buffers.
   int *A;
+  int *B;
   if (my_rank == 0){
       A = malloc(M*N * sizeof *A);
+      B = malloc(M*N * sizeof *B);
+
 
       // Initialize to some values:
-      for (size_t i = 0; i < M; i++) {
-          for (size_t j = 0; j < N; j++) {
+      for (int i = 0; i < M; i++) {
+          for (int j = 0; j < N; j++) {
               A[idx(i,j)] = v[i][j];
+              B[idx3(i,j)] = v[i][j];
           }
       }
   }
+
   else {
       A = malloc(N*n_rows[my_rank] * sizeof *A);
+      B = malloc(M*n_cols[my_rank] * sizeof *B);
+
   }
 
 
@@ -75,14 +96,14 @@ int MPI_count_friends_of_ten(int M, int N, int** v){
     printMatrixToTerminal(v, M, N);
     int n = M*N;
     printVectorToTerminal(A, n);
+    printVectorToTerminal(B, n);
   }
 
 
-
-  // Scatter A.
+  // Scatter A
   MPI_Scatterv(A,                 // Sendbuff, matters only for root process.
-               sendcounts,
-               Sdispls,
+               sendrows,
+               rowdispls,
                MPI_INT,
                A,                 // Recieve buff is the same as sendbuf here.
                N*n_rows[my_rank],
@@ -90,155 +111,105 @@ int MPI_count_friends_of_ten(int M, int N, int** v){
                0,
                MPI_COMM_WORLD);
 
+  // Scatter B
+  MPI_Scatterv(B,                 // Sendbuff, matters only for root process.
+               sendcols,
+               coldispls,
+               MPI_INT,
+               B,                 // Recieve buff is the same as sendbuf here.
+               M*n_cols[my_rank],
+               MPI_INT,
+               0,
+               MPI_COMM_WORLD);
+
+
+
   int result = 0;
   int my_sum = 0;
   int total_sum = 0;
 
   int triple_friends = 10;
 
-  for (int i = 0; i < M; i++){
+  // check the sum in horizontal row.
+  for (int i = 0; i < n_rows[my_rank]; i++){
     for (int j = 0; j < N; j++){
 
-      // check the sum in horizontal row.
-  		if ((j - 2) >= 0) {
+      if ((j - 2) >= 0) {
         result = A[idx(i,j)] + A[idx(i,j-1)] + A[idx(i,j-2)];
 
         if (result == triple_friends){
             my_sum++;
         }
+      }
 
-  		}
+    }
+  }
 
-  		// check the sum in vertical row.
-  		if ((i - 2) >= 0) {
-        result = A[idx(i,j)] + A[idx(i-1,j)] + A[idx(i-2,j)];
+  // check the sum in vertical row.
+  for (int j = 0; j < n_cols[my_rank]; j++){
+    for (int i = 0; i < M; i++){
 
-        if (result == triple_friends){
-            my_sum++;
-        }
-
-  		}
-
-  		// check the sum diagonally
-  		if ((i - 2) >= 0 && (j - 2) >= 0){
-        result = A[idx(i,j)] + A[idx(i-1,j-1)] + A[idx(i-2,j-2)];
+      if ((i - 2) <= 0) {
+        result = B[idx3(i,j)] + B[idx3(i-1,j)] + B[idx3(i-2,j)];
 
         if (result == triple_friends){
             my_sum++;
         }
-
-  	   }
-
-       // check the sum anti-diagonally
-   		if ((i - 2) >= 0 && (j - 2) <= 0){
-        result = A[idx(i,j)] + A[idx(i-1,j-1)] + A[idx(i-2,j-2)];
-
-         if (result == triple_friends){
-             my_sum++;
-         }
-
-   	   }
+      }
 
     }
   }
 
 
-  // Gather the results
-  MPI_Gatherv(&my_sum,
-              n_rows[my_rank],
-              MPI_INT,
-              &total_sum,              // Matters only at root,
-              n_rows,
-              Gdispls,
-              MPI_INT,
-              0,
-              MPI_COMM_WORLD);
+  MPI_Reduce(&my_sum, // Send buffer.
+             &total_sum, // Receive buffer.
+             M,
+             MPI_INT,
+             MPI_SUM,
+             0, // Root, the result ends up here.
+             MPI_COMM_WORLD);
+
+  MPI_Bcast(&total_sum, 1, MPI_INT, 0, MPI_COMM_WORLD);
+
+  // check the sum diagonally & anti-diagonally
+  if (my_rank == 0){
+    for (int i = 0; i < M; i++){
+      for (int j = 0; j < N; j++){
+
+        if ((i - 2) >= 0 && (j - 2) >= 0){
+          result = v[i][j] + v[i-1][j-1] + v[i-2][j-2];
+
+          if (result == triple_friends){
+              total_sum++;
+          }
+         }
+
+        if ((i - 2) >= 0 && (j - 2) <= 0){
+          result = v[i][j] + v[i-1][j-1] + v[i-2][j-2];
+
+           if (result == triple_friends){
+               total_sum++;
+           }
+         }
+
+      }
+    }
+  }
+
+  MPI_Bcast(&total_sum, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
 
   free(A);
+  free(B);
   free(n_rows);
-  free(Sdispls);
-  free(Gdispls);
-  free(sendcounts);
-
-  //MPI_Bcast(&total_sum, 1, MPI_INT, 0, MPI_COMM_WORLD);
+  free(n_cols);
+  free(rowdispls);
+  free(coldispls);
+  free(sendrows);
+  free(sendcols);
 
   return total_sum;
 }
-
-
-void Distribution(int section, int* my_x, int* my_s, int* my_r, int my_rank, int workers, int rest, int stride){
-/*
-Partitioning data boundaries for workers.
-Input args:
-    section:              Equal sized partion of the x-dim in image
-    my_x:                 Number of columns a worker is assigned to recieve from master
-    my_s:                 Index where the first column is drawn
-    my_r:                 Number of columns a worker is assigned to deliver to master
-    my_rank:              Worker ID
-    workers:              Number of workers
-    rest:                 Partion of image in x-dim that was left out of partitioning.
-    stride:               How many columns the image shall "see" over boundaries
-*/
-
-    if (my_rank == workers)     // Last worker
-    {
-        *my_x = section+stride+rest;
-        *my_r = section+rest;
-        *my_s = (my_rank-1)*section-stride;
-    }
-    else if (my_rank == 1)      // First worker
-    {
-        *my_x = section+stride;
-        *my_r = section;
-        *my_s = 0;
-    }
-    else                         // Middel workers
-    {
-        *my_x = section+stride*2;
-        *my_r = section;
-        *my_s = (my_rank-1)*section-stride;
-    }
-}
-
-void setup_ranks(int *dim, int *period, int *coords, int m, int my_rank, int num_procs, int *l_m){
-  /* Function:
-   * 1) Finds length of domains l_m
-   * 2) Setup coords which contains indices in m-direction
-   */
-  (*l_m) = m/dim[0];
-  int rest_m = m%dim[0];
-
-  if (rest_m != 0) (*l_m)++;
-
-  coords[0] = (*l_m)*my_rank; // start index in m-direction
-  coords[1] = (*l_m)*(my_rank+1); // stop index + 1 in m-dir
-
-  if (my_rank == num_procs-1) coords[1] = m;
-  /* Image
-   * |    ...   0   ...   |
-   * |    ...   1   ...   |
-   * |          :         |
-   * |    num_procs - 1   |
-   * a rank will use indices:
-   * im = coords[0], ... , coords[1] - 1
-   * in = 0, ... , n - 1
-   */
-}
-
-void communicate2D_vertical(double **up_local, int M, int N_local, int my_rank, int numprocs){
-  MPI_Status status;
-
-  int lower_neigh = (my_rank>1) ? my_rank-1 : MPI_PROC_NULL;
-  int upper_neigh = (my_rank<(numprocs-1)) ? my_rank+1 : MPI_PROC_NULL;
-
-  // send to lower neighbor, receive from upper neighor
-  MPI_Sendrecv (&(up_local[1][1]), M, MPI_DOUBLE, lower_neigh, 5, &(up_local[N_local+1][1]), M, MPI_DOUBLE, upper_neigh, 5, MPI_COMM_WORLD, &status);
-
-  // send to upper neighbor, receive from lower neighor
-  MPI_Sendrecv (&(up_local[N_local][1]), M, MPI_DOUBLE, upper_neigh, 6, &(up_local[0][1]), M, MPI_DOUBLE, lower_neigh, 6, MPI_COMM_WORLD, &status);
-}
-
 
 
 
