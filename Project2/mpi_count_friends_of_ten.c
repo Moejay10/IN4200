@@ -6,15 +6,17 @@
 #include <mpi.h>
 
 #include "functions.h"
-
-const int MAX_STRING = 100;
-
+#include "count_friends_of_ten.c"
 
 
-// Used to index local copies of the data in matrix A ex. 4.
+// Used to index local copies of the data in matrix A
 #define idx(i,j) (i*N + j)
-#define idx2(i,j) (i*n_cols[my_rank] + j)
-#define idx3(i,j) (i + j*M)
+#define idx2(i,j) (i + j*M)
+
+#define idx3(i,j) (i*n_cols[my_rank] + j)
+#define idx4(i,j) (j*n_rows[my_rank] + i)
+#define idx5(i,j) (i*n_cols[my_rank] + j*n_rows[my_rank])
+
 
 
 
@@ -39,26 +41,26 @@ int MPI_count_friends_of_ten(int M, int N, int** v){
 
   int *rowdispls = malloc(numprocs*sizeof *rowdispls);
   int *coldispls = malloc(numprocs*sizeof *coldispls);
-
   rowdispls[0] = 0;
   coldispls[0] = 0;
 
-  int rows = N/numprocs;
-  int remainder_row = N%numprocs;
+  int rows = M/numprocs;
+  int remainder_row = M%numprocs;
 
-  int cols = M/numprocs;
-  int remainder_col = M%numprocs;
+  int cols = N/numprocs;
+  int remainder_col = N%numprocs;
 
   // Last remainder processes gets an extra row.
   for (int rank = 0; rank < numprocs-1; rank++) {
-      n_rows[rank] = rows + ((rank >= (numprocs - remainder_row)) ? 1:0);
-      n_cols[rank] = cols + ((rank >= (numprocs - remainder_col)) ? 1:0);
 
-      sendrows[rank] = n_rows[rank]*N;
-      sendcols[rank] = n_cols[rank]*M;
+    n_rows[rank] = rows + ((rank >= (numprocs - remainder_row)) ? 1:0);
+    n_cols[rank] = cols + ((rank >= (numprocs - remainder_col)) ? 1:0);
 
-      rowdispls[rank+1] = rowdispls[rank] + sendrows[rank];
-      coldispls[rank+1] = coldispls[rank] + sendcols[rank];
+    sendrows[rank] = n_rows[rank]*N;
+    sendcols[rank] = n_cols[rank]*M;
+
+    rowdispls[rank+1] = rowdispls[rank] + sendrows[rank];
+    coldispls[rank+1] = coldispls[rank] + sendcols[rank];
 
   }
   n_rows[numprocs-1] = rows + ((numprocs-1) >= (numprocs - remainder_row) ? 1:0);
@@ -66,6 +68,21 @@ int MPI_count_friends_of_ten(int M, int N, int** v){
 
   sendrows[numprocs-1] = n_rows[numprocs-1]*N;
   sendcols[numprocs-1] = n_cols[numprocs-1]*M;
+
+  n_rows[1] += n_rows[0];
+  n_cols[1] += n_cols[0];
+
+  n_rows[0] = 0;
+  n_cols[0] = 0;
+
+  sendrows[1] += sendrows[0];
+  sendcols[1] += sendcols[0];
+
+  sendrows[0] = 0;
+  sendcols[0] = 0;
+
+  rowdispls[1] = 0;
+  coldispls[1] = 0;
 
 
   // Allocate local buffers.
@@ -80,7 +97,7 @@ int MPI_count_friends_of_ten(int M, int N, int** v){
       for (int i = 0; i < M; i++) {
           for (int j = 0; j < N; j++) {
               A[idx(i,j)] = v[i][j];
-              B[idx3(i,j)] = v[i][j];
+              B[idx2(i,j)] = v[i][j];
           }
       }
   }
@@ -95,8 +112,8 @@ int MPI_count_friends_of_ten(int M, int N, int** v){
   if (my_rank == 0){
     printMatrixToTerminal(v, M, N);
     int n = M*N;
-    printVectorToTerminal(A, n);
-    printVectorToTerminal(B, n);
+    //printVectorToTerminal(A, n);
+    //printVectorToTerminal(B, n);
   }
 
 
@@ -129,74 +146,112 @@ int MPI_count_friends_of_ten(int M, int N, int** v){
   int total_sum = 0;
 
   int triple_friends = 10;
-
-  // check the sum in horizontal row.
-  for (int i = 0; i < n_rows[my_rank]; i++){
-    for (int j = 0; j < N; j++){
-
-      if ((j - 2) >= 0) {
-        result = A[idx(i,j)] + A[idx(i,j-1)] + A[idx(i,j-2)];
-
-        if (result == triple_friends){
-            my_sum++;
-        }
-      }
-
-    }
-  }
-
-  // check the sum in vertical row.
-  for (int j = 0; j < n_cols[my_rank]; j++){
+/*
+  if (my_rank > 0){
+    // Print the matrix
     for (int i = 0; i < M; i++){
-
-      if ((i - 2) <= 0) {
-        result = B[idx3(i,j)] + B[idx3(i-1,j)] + B[idx3(i-2,j)];
-
-        if (result == triple_friends){
-            my_sum++;
+      printf("rank %d \n", my_rank+1);
+      for (int j = 0; j < N; j++){
+        if (i < n_rows[my_rank]){
+          printf("%d", A[idx(i,j)]);
         }
       }
-
+      printf("\n");
     }
   }
+*/
 
+/*
+if (my_rank > 0){
+  for (int j = 0; j < N; j++){
+    printf("rank %d \n", my_rank+1);
+    for (int i = 0; i < M; i++){
+      if (j < n_cols[my_rank]){
+        printf("%d", B[idx2(i,j)]);
+      }
+    }
+    printf("\n");
+  }
+}
+*/
 
-  MPI_Reduce(&my_sum, // Send buffer.
-             &total_sum, // Receive buffer.
-             M,
-             MPI_INT,
-             MPI_SUM,
-             0, // Root, the result ends up here.
-             MPI_COMM_WORLD);
+  if (numprocs > 1){
 
-  MPI_Bcast(&total_sum, 1, MPI_INT, 0, MPI_COMM_WORLD);
-
-  // check the sum diagonally & anti-diagonally
-  if (my_rank == 0){
     for (int i = 0; i < M; i++){
       for (int j = 0; j < N; j++){
 
-        if ((i - 2) >= 0 && (j - 2) >= 0){
-          result = v[i][j] + v[i-1][j-1] + v[i-2][j-2];
+        if (my_rank > 0){
 
-          if (result == triple_friends){
-              total_sum++;
+          if (i < n_rows[my_rank]){
+            // check the sum in horizontal row.
+            if ((j - 2) >= 0) {
+              result = A[idx(i,j)] + A[idx(i,j-1)] + A[idx(i,j-2)];
+
+              if (result == triple_friends){
+                  my_sum++;
+              }
+            }
           }
-         }
 
-        if ((i - 2) >= 0 && (j - 2) <= 0){
-          result = v[i][j] + v[i-1][j-1] + v[i-2][j-2];
 
-           if (result == triple_friends){
-               total_sum++;
-           }
-         }
+          if (j < n_cols[my_rank]){
+            // check the sum in vertical row.
+            if ((i - 2) >= 0) {
+              result = B[idx2(i,j)] + B[idx2(i-1,j)] + B[idx2(i-2,j)];
+
+              if (result == triple_friends){
+                  my_sum++;
+              }
+            }
+          }
+
+        }
+
+
+        if (my_rank == 0){
+
+          // check the sum diagonally
+      		if ((i - 2) >= 0 && (j - 2) >= 0){
+            result = v[i][j] + v[i-1][j-1] + v[i-2][j-2];
+
+            if (result == triple_friends){
+                my_sum++;
+            }
+      	   }
+
+           // check the sum anti-diagonally
+       		if ((i - 2) >= 0 && (j - 2) <= 0){
+             result = v[i][j] + v[i-1][j-1] + v[i-2][j-2];
+
+             if (result == triple_friends){
+                 my_sum++;
+             }
+       	   }
+
+        }
+
 
       }
     }
+
   }
 
-  MPI_Bcast(&total_sum, 1, MPI_INT, 0, MPI_COMM_WORLD);
+  else{
+
+    my_sum = count_friends_of_ten(M,N,v);
+
+  }
+
+
+
+
+  // Summing up all contributions and distributing to every processor.
+  MPI_Allreduce(&my_sum,
+                &total_sum,
+                1,
+                MPI_INT,
+                MPI_SUM,
+                MPI_COMM_WORLD);
 
 
   free(A);
@@ -210,6 +265,7 @@ int MPI_count_friends_of_ten(int M, int N, int** v){
 
   return total_sum;
 }
+
 
 
 

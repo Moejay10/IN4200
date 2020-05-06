@@ -15,7 +15,7 @@ int main(int argc, char** argv){
   // Initialization
   int my_rank, numprocs;
 
-  int M, N, num_triple_friends;
+  int M, N, num_triple_friends, friends;
   int **v = NULL;
 
   // MPI initializations
@@ -53,13 +53,11 @@ int main(int argc, char** argv){
 
   }
 
-  //MPI_Bcast(&M, 1, MPI_INT, 0, MPI_COMM_WORLD);
-  //MPI_Bcast(&N, 1, MPI_INT, 0, MPI_COMM_WORLD);
-
 
   num_triple_friends = MPI_count_friends_of_ten(M, N, v);
 
-  printf("MPI rank <%d>: number of triple friends=%d\n", my_rank, num_triple_friends);
+
+  printf("MPI rank <%d>: number of triple friends=%d\n", my_rank+1, num_triple_friends);
 
   if (my_rank == 0){
     // Deallocation of 2D array v
