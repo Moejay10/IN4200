@@ -29,14 +29,15 @@ int main(int argc, char** argv){
     //test_MPI_count_friends_of_ten()
 
     // Decide the values for M and N
-    M = 4;
-    N = 5;
+    M = 100;
+    N = 150;
 
     // Allocate 2D array v and assign it with suitable values
     alloc2DMatrix(&v, M, N);
 
     construct2DMatrix(&v, M, N);
 
+    /*
     int v_exact[4][5] =
     {
       {1, 5, 6, 3, 1},
@@ -50,6 +51,8 @@ int main(int argc, char** argv){
         v[i][j] = v_exact[i][j];
       }
     }
+    */
+    random2DMatrix(&v, M, N);
 
   }
 

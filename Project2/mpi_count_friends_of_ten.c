@@ -110,7 +110,7 @@ int MPI_count_friends_of_ten(int M, int N, int** v){
 
 
   if (my_rank == 0){
-    printMatrixToTerminal(v, M, N);
+    //printMatrixToTerminal(v, M, N);
     int n = M*N;
     //printVectorToTerminal(A, n);
     //printVectorToTerminal(B, n);
@@ -220,8 +220,8 @@ if (my_rank > 0){
       	   }
 
            // check the sum anti-diagonally
-       		if ((i - 2) >= 0 && (j - 2) <= 0){
-             result = v[i][j] + v[i-1][j-1] + v[i-2][j-2];
+       		if ((i - 2) >= 0 && j < N - 2){
+             result = v[i][j] + v[i-1][j+1] + v[i-2][j+2];
 
              if (result == triple_friends){
                  my_sum++;

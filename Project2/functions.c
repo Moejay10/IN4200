@@ -47,6 +47,16 @@ void construct2DMatrix(int ***A, int M, int N){
 
 }
 
+// Fills a NxN matrix with zeros
+void random2DMatrix(int ***A, int M, int N){
+  for (int i = 0; i < M; i++){
+    for (int j = 0; j < N; j++){
+      (*A)[i][j] = rand() % 10;
+    }
+  }
+
+}
+
 // Print vectors values.
 void printVectorToTerminal(int *a, int N){
   //printf(" row  col \n");

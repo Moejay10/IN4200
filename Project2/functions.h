@@ -10,6 +10,7 @@ void alloc2DMatrix(int ***A, int M, int N);
 void allocVector(int **a, int N);
 
 void construct2DMatrix(int ***A, int M, int N);
+void random2DMatrix(int ***A, int M, int N);
 
 void free2D(int **A);
 void free1D(int *a);

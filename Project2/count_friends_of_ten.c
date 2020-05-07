@@ -42,17 +42,17 @@ int count_friends_of_ten(int M, int N, int** v){
         result = v[i][j] + v[i-1][j-1] + v[i-2][j-2];
 
         if (result == triple_friends){
-            diagonal++;
+          diagonal++;
         }
 
   	   }
 
        // check the sum anti-diagonally
-   		if ((i - 2) >= 0 && (j - 2) <= 0){
-         result = v[i][j] + v[i-1][j-1] + v[i-2][j-2];
+   		if ((i - 2) >= 0 && j < N - 2){
+         result = v[i][j] + v[i-1][j+1] + v[i-2][j+2];
 
          if (result == triple_friends){
-             diagonal++;
+           diagonal++;
          }
 
    	   }
@@ -62,12 +62,12 @@ int count_friends_of_ten(int M, int N, int** v){
   }
   sum = horizontal + vertical + diagonal;
 
-/*
+  /*
   printf("%d triple-friends of ten found horizontally \n", horizontal);
   printf("%d triple-friends of ten found vertically \n", vertical);
   printf("%d triple-friends of ten found diagonally \n", diagonal);
   printf("There are a total of %d triple-friends found in the matrix \n", sum);
-*/
+  */
 
   return sum;
 }
@@ -97,6 +97,7 @@ void test_count_friends_of_ten(){
   alloc2DMatrix(&v_test, M, N);
 
   construct2DMatrix(&v_test, M, N);
+
 
   for (int i = 0; i < M; i++){
     for (int j = 0; j < N; j++){
