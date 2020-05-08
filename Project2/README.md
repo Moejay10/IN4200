@@ -28,5 +28,5 @@ Where the command line argument "num_process" is the number of processes that ar
 
 # References
 
-https://www.geeksforgeeks.org/
-https://www.uio.no/studier/emner/matnat/ifi/IN3200/v20/teaching-material/in3200_in4200_home_exam2_v20.pdf
+- https://www.geeksforgeeks.org/
+- https://www.uio.no/studier/emner/matnat/ifi/IN3200/v20/teaching-material/in3200_in4200_home_exam2_v20.pdf
