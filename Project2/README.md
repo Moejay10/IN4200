@@ -5,14 +5,16 @@ the code finds the total number of “triple-friends of 10”. Here, a “triple
 of 10” is defined as three neighboring numbers (in the horizontal, vertical, or
 diagonal directions) that sum up to 10.
 
+# Code
+All code can be found inside the folder Code.
 
-# Compilation
-
+## Compilation
 Compile the code by:
 ```
 $ make all
 ```
 
+## Execution
 You execute the serialized program by:
 ```
 $ ./program.exe
