@@ -25,14 +25,16 @@ the index of the outbound webpage and the index of the inbound webpage;
 should be excluded (not used in the data storage later);
 * Note: the webpage indices start from 0 (C convention).
 
+# Code
+All code can be found inside the folder Code.
 
-# Compilation
-
+## Compilation
 Compile the code by:
 ```
 $ make all
 ```
 
+## Execution
 You execute the serialized program by:
 ```
 $ ./program.exe filename.txt
