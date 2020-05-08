@@ -7,6 +7,25 @@
 #include "functions.h"
 
 int count_friends_of_ten(int M, int N, int** v){
+/* Description
+  ------------------
+     Finds friends of ten of a MxN 2D-matrix by using
+     MPI. This program is utililizing a row-wise
+     decomposition, and all processors returns the same
+     number of friends.
+
+     Parameters
+     ----------
+     M: int
+     N: initialized int
+     v: initialized 2D-vector as int.
+
+     Returns
+  -----------------
+     total_friends_of_ten: int
+*/
+
+
   int result = 0;
   int sum = 0;
   int horizontal = 0;
@@ -62,12 +81,6 @@ int count_friends_of_ten(int M, int N, int** v){
   }
   sum = horizontal + vertical + diagonal;
 
-  /*
-  printf("%d triple-friends of ten found horizontally \n", horizontal);
-  printf("%d triple-friends of ten found vertically \n", vertical);
-  printf("%d triple-friends of ten found diagonally \n", diagonal);
-  printf("There are a total of %d triple-friends found in the matrix \n", sum);
-  */
 
   return sum;
 }

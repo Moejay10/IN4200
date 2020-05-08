@@ -13,25 +13,35 @@
 #define idx(i,j) (i*N + j)
 #define idx2(i,j) (i + j*M)
 
-#define idx3(i,j) (i*n_cols[my_rank] + j)
-#define idx4(i,j) (j*n_rows[my_rank] + i)
-#define idx5(i,j) (i*n_cols[my_rank] + j*n_rows[my_rank])
-
-
-
-
 int MPI_count_friends_of_ten(int M, int N, int** v){
+/* Description
+------------------
+   Finds friends of ten of a MxN 2D-matrix by using
+   MPI. This program is utililizing a row-wise and col-wise
+   decomposition, and all processors returns the same
+   number of triple friends.
 
-  int my_rank, numprocs;
+   Parameters
+   ----------
+   M: int
+   N: initialized int
+   v: initialized 2D-vector as int.
+
+   Returns
+-----------------
+   total_friends_of_ten: int
+*/
 
   // find out process ID and how many processes were started
+  int my_rank, numprocs;
+
   MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
   MPI_Comm_size (MPI_COMM_WORLD, &numprocs);
 
   MPI_Bcast(&M, 1, MPI_INT, 0, MPI_COMM_WORLD);
   MPI_Bcast(&N, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
-  // Calculate displacements and number of rows for each process.
+  // Calculate displacements and number of rows and cols for each process.
   int *n_rows = malloc(numprocs*sizeof *n_rows);
   int *n_cols = malloc(numprocs*sizeof *n_cols);
 
@@ -108,16 +118,7 @@ int MPI_count_friends_of_ten(int M, int N, int** v){
 
   }
 
-
-  if (my_rank == 0){
-    //printMatrixToTerminal(v, M, N);
-    int n = M*N;
-    //printVectorToTerminal(A, n);
-    //printVectorToTerminal(B, n);
-  }
-
-
-  // Scatter A
+  // Scatter A row-wise to all processors except master
   MPI_Scatterv(A,                 // Sendbuff, matters only for root process.
                sendrows,
                rowdispls,
@@ -128,7 +129,7 @@ int MPI_count_friends_of_ten(int M, int N, int** v){
                0,
                MPI_COMM_WORLD);
 
-  // Scatter B
+  // Scatter B col-wise to all processors except master
   MPI_Scatterv(B,                 // Sendbuff, matters only for root process.
                sendcols,
                coldispls,
@@ -139,41 +140,11 @@ int MPI_count_friends_of_ten(int M, int N, int** v){
                0,
                MPI_COMM_WORLD);
 
-
-
   int result = 0;
   int my_sum = 0;
   int total_sum = 0;
 
   int triple_friends = 10;
-/*
-  if (my_rank > 0){
-    // Print the matrix
-    for (int i = 0; i < M; i++){
-      printf("rank %d \n", my_rank+1);
-      for (int j = 0; j < N; j++){
-        if (i < n_rows[my_rank]){
-          printf("%d", A[idx(i,j)]);
-        }
-      }
-      printf("\n");
-    }
-  }
-*/
-
-/*
-if (my_rank > 0){
-  for (int j = 0; j < N; j++){
-    printf("rank %d \n", my_rank+1);
-    for (int i = 0; i < M; i++){
-      if (j < n_cols[my_rank]){
-        printf("%d", B[idx2(i,j)]);
-      }
-    }
-    printf("\n");
-  }
-}
-*/
 
   if (numprocs > 1){
 
@@ -239,11 +210,7 @@ if (my_rank > 0){
   else{
 
     my_sum = count_friends_of_ten(M,N,v);
-
   }
-
-
-
 
   // Summing up all contributions and distributing to every processor.
   MPI_Allreduce(&my_sum,
@@ -273,9 +240,16 @@ void test_MPI_count_friends_of_ten(){
   /* Function to test count_friends_of_ten
   using the example illustrated in the home exam. */
 
+
+  int my_rank, numprocs;
+
+  // MPI initializations
+  MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+  MPI_Comm_size (MPI_COMM_WORLD, &numprocs);
+
   // Hard coding the exact values:
-  int M = 4;
-  int N = 5;
+  int M;
+  int N;
   int Total_triple_friends_exact = 7;
   int v_exact[4][5] =
   {
@@ -289,31 +263,47 @@ void test_MPI_count_friends_of_ten(){
   int **v_test;
   int Total_triple_friends_test = 0;
 
-  alloc2DMatrix(&v_test, M, N);
+  if (my_rank == 0){
+    // Test
+    //test_MPI_count_friends_of_ten()
 
-  construct2DMatrix(&v_test, M, N);
+    // Decide the values for M and N
+    M = 4;
+    N = 5;
 
-  for (int i = 0; i < M; i++){
-    for (int j = 0; j < N; j++){
-      v_test[i][j] = v_exact[i][j];
+    // Allocate 2D array v and assign it with suitable values
+    alloc2DMatrix(&v_test, M, N);
+
+    construct2DMatrix(&v_test, M, N);
+
+    for (int i = 0; i < M; i++){
+      for (int j = 0; j < N; j++){
+        v_test[i][j] = v_exact[i][j];
+      }
     }
+
+    printf("\n Testing MPI_count_friends_of_ten \n");
+
   }
 
-  printf("\n Testing count_friends_of_ten \n");
 
   Total_triple_friends_test = MPI_count_friends_of_ten(M, N, v_test);
 
-  if (Total_triple_friends_test != Total_triple_friends_exact){
-    printf("The total number of triple-friends of ten was extracted incorrectly in function count_friends_of_ten \n");
-    printf("Total_triple_friends_exact is: %d, while the extracted Total_triple_friends_test is: %d \n", Total_triple_friends_exact, Total_triple_friends_test);
+  if (my_rank == 0){
+    if (Total_triple_friends_test != Total_triple_friends_exact){
+      printf("The total number of triple-friends of ten was extracted incorrectly in function MPI_count_friends_of_ten \n");
+      printf("Total_triple_friends_exact is: %d, while the extracted Total_triple_friends_test is: %d \n", Total_triple_friends_exact, Total_triple_friends_test);
+    }
+
+    else
+    {
+      printf("The total number of triple-friends of ten was extracted correctly in function MPI_count_friends_of_ten \n");
+    }
+
+    // Deallocation of 2D array v
+    free2D(v_test);
+
   }
 
-  else
-  {
-    printf("The total number of triple-friends of ten was extracted correctly in function count_friends_of_ten \n");
-  }
-
-
-  free2D(v_test);
 
 }

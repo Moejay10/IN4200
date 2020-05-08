@@ -14,7 +14,7 @@ program.exe: serial_main.c functions.c
 	$(CC) $(FLAGS) serial_main.c functions.c $(LIB) -o program.exe
 
 mpi_program.exe: mpi_main.c functions.c
-		mpicc mpi_main.c functions.c $(LIB) -o mpi_program.exe
+		mpicc mpi_main.c functions.c $(LIB) -fopenmp -o mpi_program.exe
 
 clean :
 		rm -f *.o $(PROGRAMS)
